@@ -19,12 +19,14 @@
 #include <HTTPClient.h>                // Library to easily make HTTP GET, POST and PUT requests to a web server
 #include <WiFiClientSecure.h>          // Base class that provides Client SSL to ESP32
 #include <MAX30105.h>                  // SparkFun MAX3010x Pulse and Proximity Sensor Library - https://github.com/sparkfun/SparkFun_MAX3010x_Sensor_Library
+#include <SparkFunLSM6DS3.h>           // LSM6DS3 accelerometer and gyroscope 6DoF IMU Library - https://github.com/ThingEngineer/SparkFun_LSM6DS3_Arduino_Library
 
 
 /****************************************************************************
 * Constructors
 ****************************************************************************/
 MAX30105 hrSensor;
+LSM6DS3 IMU;
 
 
 /****************************************************************************

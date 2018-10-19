@@ -29,6 +29,8 @@ void setup() {
   /*END*********MAX30102 Pulse Oximeter and Heart-Rate Sensor******************/
 
   pinMode(25, OUTPUT);  // ocilliscope loop speed test ping
+  IMU.begin();                         // Initialize LSM6DS3 6DOF IMU
+
 
   delay(1000);
   Serial.println(F("Setup Complete"));
@@ -36,6 +38,23 @@ void setup() {
 
 
 void loop() {
+
+  Serial.print(F(","));
+  Serial.print(IMU.readFloatAccelX(), 4);
+  Serial.print(F(","));
+  Serial.print(IMU.readFloatAccelY(), 4);
+  Serial.print(F(","));
+  Serial.print(IMU.readFloatAccelZ(), 4);
+  Serial.print(F(","));
+  Serial.print(IMU.readFloatGyroX(), 4);
+  Serial.print(F(","));
+  Serial.print(IMU.readFloatGyroY(), 4);
+  Serial.print(F(","));
+  Serial.print(IMU.readFloatGyroZ(), 4);
+  Serial.print(F(","));
+  Serial.print(IMU.readTempC(), 4);
+  Serial.print(F(","));
+  Serial.println(IMU.readTempF(), 4);
 
   getNextHeartRateSample();
   if ( hrBufferCounter == SF ) normalizeRedLED();
