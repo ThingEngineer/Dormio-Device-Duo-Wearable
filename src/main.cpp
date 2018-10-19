@@ -5,7 +5,7 @@ void setup() {
   Serial.begin(115200);                // Initialize serial data transmission and set baud rate
   Serial.println(F("Initializing"));
 
-  Wire.begin(21,22);                        // Initiate the Wire library and join the I2C bus as master
+  Wire.begin(21,22);                   // Initiate the Wire library and join the I2C bus as master
 
   /***********************************ESP32*************************************/
   WiFi.disconnect(true);               // Initial state - Wifi disabled
@@ -28,10 +28,10 @@ void setup() {
   redPulseAmplitude = 32;   // Initial red LED pulse amplitude
   /*END*********MAX30102 Pulse Oximeter and Heart-Rate Sensor******************/
 
-  pinMode(25, OUTPUT);  // ocilliscope loop speed test ping
   tempSensor.begin();                  // Initilize MLX90614 temperature sensor
   IMU.begin();                         // Initialize LSM6DS3 6DOF IMU
 
+  pinMode(25, OUTPUT);                 // ocilliscope loop speed test ping
 
   delay(1000);
   Serial.println(F("Setup Complete"));
