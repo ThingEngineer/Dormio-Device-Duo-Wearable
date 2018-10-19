@@ -21,7 +21,7 @@ void setup() {
   int pulseWidth = 215; // Options: 69, 118, 215, 411
   int adcRange = 2048; // Options: 2048, 4096, 8192, 16384
 
-  hrSensor.begin(Wire, I2C_SPEED_FAST);
+  if ( hrSensor.begin(Wire, I2C_SPEED_FAST) == false ) Serial.println(F("MAX30102 Error"));
   // Configure MAX3010X sensor with these settings
   hrSensor.setup(ledBrightness, sampleAverage, ledMode, sampleRate, pulseWidth, adcRange);
 
