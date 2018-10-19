@@ -28,6 +28,8 @@ void setup() {
   redPulseAmplitude = 32;   // Initial red LED pulse amplitude
   /*END*********MAX30102 Pulse Oximeter and Heart-Rate Sensor******************/
 
+  pinMode(25, OUTPUT);  // ocilliscope loop speed test ping
+
   delay(1000);
   Serial.println(F("Setup Complete"));
 }
@@ -38,6 +40,7 @@ void loop() {
   getNextHeartRateSample();
   if ( hrBufferCounter == SF ) normalizeRedLED();
   if ( hrBufferCounter == BUFFER_SIZE ) doHttpPost();
+  digitalWrite( 25, !digitalRead(25) );
 
 }
 
