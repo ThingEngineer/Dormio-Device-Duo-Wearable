@@ -29,6 +29,7 @@ void setup() {
   /*END*********MAX30102 Pulse Oximeter and Heart-Rate Sensor******************/
 
   pinMode(25, OUTPUT);  // ocilliscope loop speed test ping
+  tempSensor.begin();                  // Initilize MLX90614 temperature sensor
   IMU.begin();                         // Initialize LSM6DS3 6DOF IMU
 
 
@@ -38,6 +39,10 @@ void setup() {
 
 
 void loop() {
+
+  Serial.print(tempSensor.readAmbientTempF(), DEC);
+  Serial.print(F(","));
+  Serial.print(tempSensor.readObjectTempF(), DEC);
 
   Serial.print(F(","));
   Serial.print(IMU.readFloatAccelX(), 4);
