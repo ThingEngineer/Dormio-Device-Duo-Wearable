@@ -8,10 +8,6 @@
 #ifndef MAIN_H
 #define MAIN_H
 
-#if (__GNUC__ * 100 + __GNUC_MINOR__) < 303
-#error "AVR-GCC 3.3 or later is required, update AVR-GCC compiler!"
-#endif
-
 
 /****************************************************************************
 * Includes
