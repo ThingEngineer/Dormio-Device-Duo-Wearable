@@ -24,8 +24,11 @@ void setup() {
   particleSensor.begin(Wire, I2C_SPEED_FAST);
   // Configure MAX3010X sensor with these settings
   particleSensor.setup(ledBrightness, sampleAverage, ledMode, sampleRate, pulseWidth, adcRange);
+
+  redPulseAmplitude = 32;   // Initial red LED pulse amplitude
   /*END*********MAX30102 Pulse Oximeter and Heart-Rate Sensor******************/
 
+  delay(1000);
   Serial.println(F("Setup Complete"));
 }
 
