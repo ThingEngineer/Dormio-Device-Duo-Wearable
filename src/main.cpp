@@ -2,7 +2,7 @@
 
 
 void setup() {
-  Serial.begin(115200);
+  Serial.begin(115200);                // Initialize serial data transmission and set baud rate
   Serial.println("Begin");
 
   /***********************************ESP32*************************************/
