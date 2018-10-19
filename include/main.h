@@ -34,9 +34,9 @@ MAX30105 particleSensor;
 /****************************************************************************
 * Function prototypes
 ****************************************************************************/
-void getNextHeartRateSample(void);
-void normalizeRedLED(void);
-void doHttpPost(void);
+void getNextHeartRateSample();
+void normalizeRedLED();
+void doHttpPost();
 
 
 /****************************************************************************

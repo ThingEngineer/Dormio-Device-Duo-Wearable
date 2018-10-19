@@ -39,7 +39,7 @@ void loop() {
 }
 
 
-void getNextHeartRateSample(void) {
+void getNextHeartRateSample() {
   redBuffer[hrBufferCounter] = particleSensor.getRed();
   irBuffer[hrBufferCounter] = particleSensor.getIR();
   particleSensor.nextSample();
@@ -47,7 +47,7 @@ void getNextHeartRateSample(void) {
 }
 
 
-void normalizeRedLED(void) {
+void normalizeRedLED() {
   // Calculate Red & IR DC mean
   redMean = 0;
   irMean = 0;
@@ -75,7 +75,7 @@ void normalizeRedLED(void) {
 }
 
 
-void doHttpPost(void) {
+void doHttpPost() {
   Serial.println(F("Starting WiFi"));
   WiFi.enableSTA(true);
   WiFi.mode(WIFI_STA);
