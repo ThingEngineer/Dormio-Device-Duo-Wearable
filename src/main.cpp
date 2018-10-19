@@ -48,7 +48,6 @@ void getNextHeartRateSample(void) {
 
 
 void normalizeRedLED(void) {
-  Serial.println(hrBufferCounter, DEC);
   // Calculate Red & IR DC mean
   redMean = 0;
   irMean = 0;
