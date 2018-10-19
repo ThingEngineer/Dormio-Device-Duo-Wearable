@@ -3,7 +3,7 @@
 
 void setup() {
   Serial.begin(115200);                // Initialize serial data transmission and set baud rate
-  Serial.println("Begin");
+  Serial.println("Initializing");
 
   Wire.begin();                        // Initiate the Wire library and join the I2C bus as master
 
@@ -31,13 +31,11 @@ void setup() {
 
 
 void loop() {
-    Serial.println("Program Loop");
 
-    getNextHeartRateSample();
+  getNextHeartRateSample();
+  if ( hrBufferCounter == SF ) normalizeRedLED();
+  if (hrBufferCounter == BUFFER_SIZE) doHttpPost();
 
-    doHttpPost();
-
-    delay(5000);
 }
 
 
@@ -51,49 +49,52 @@ void getNextHeartRateSample(void) {
 
 void doHttpPost(void) {
   Serial.println("Starting WiFi");
-    WiFi.enableSTA(true);
-    WiFi.mode(WIFI_STA);
-    WiFi.begin(ssid, password);
+  WiFi.enableSTA(true);
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(ssid, password);
 
-    while (WiFi.status() != WL_CONNECTED) { //Check for the connection
-      delay(250);
-      Serial.println("Connecting..");
-    }
+  while (WiFi.status() != WL_CONNECTED) { //Check for the connection
 
-    Serial.print("Connected to the WiFi network with IP: ");
-    Serial.println(WiFi.localIP());
+    delay(250);
+    Serial.println("Connecting..");
 
-    if(WiFi.status()== WL_CONNECTED){   //Check WiFi connection status
+  }
 
-      HTTPClient http;
+  Serial.print("Connected to the WiFi network with IP: ");
+  Serial.println(WiFi.localIP());
 
-      http.begin(post_url);  //Specify destination for HTTP request
-      http.addHeader("Content-Type", "application/json");             //Specify content-type header
+  if(WiFi.status()== WL_CONNECTED) { //Check WiFi connection status
 
-      // Make some test data
-      String secondsSinceBoot = String(millis()/1000);
-      // Send the actual POST request
-      int httpResponseCode = http.POST("{ \"seconds-since-boot\": " + String(secondsSinceBoot) + ", \"data\": {\"test\": " + 123 + "} }");
+    HTTPClient http;
 
-      if(httpResponseCode>0){
+    http.begin(post_url);  //Specify destination for HTTP request
+    http.addHeader("Content-Type", "application/json");             //Specify content-type header
 
-        Serial.println(httpResponseCode);   //Print return code
+    // Make some test data
+    String secondsSinceBoot = String(millis()/1000);
+    // Send the actual POST request
+    int httpResponseCode = http.POST("{ \"seconds-since-boot\": " + String(secondsSinceBoot) + ", \"data\": {\"test\": " + 123 + "} }");
 
-      }else{
+    if(httpResponseCode>0) {
 
-       Serial.print("Error on sending request: ");
-       Serial.println(httpResponseCode);
+      Serial.println(httpResponseCode);   //Print return code
 
-      }
+    } else {
 
-      http.end();  //Free resources
-
-    }else{
-
-       Serial.println("WiFi connection error");
+     Serial.print("Error on sending request: ");
+     Serial.println(httpResponseCode);
 
     }
-    WiFi.disconnect(true);
-    WiFi.mode(WIFI_OFF);
-    Serial.println("WiFi disconnected");
+
+    http.end();  //Free resources
+
+  } else {
+
+     Serial.println("WiFi connection error");
+
+  }
+
+  WiFi.disconnect(true);
+  WiFi.mode(WIFI_OFF);
+  Serial.println("WiFi disconnected");
 }
