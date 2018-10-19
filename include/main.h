@@ -21,6 +21,13 @@
 #include <WiFi.h>                      // ESP32 Wifi support
 #include <HTTPClient.h>                // Library to easily make HTTP GET, POST and PUT requests to a web server
 #include <WiFiClientSecure.h>          // Base class that provides Client SSL to ESP32
+#include <MAX30105.h>                  // SparkFun MAX3010x Pulse and Proximity Sensor Library - https://github.com/sparkfun/SparkFun_MAX3010x_Sensor_Library
+
+
+/****************************************************************************
+* Constructors
+****************************************************************************/
+MAX30105 particleSensor;
 
 
 /****************************************************************************

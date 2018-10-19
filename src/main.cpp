@@ -5,10 +5,26 @@ void setup() {
   Serial.begin(115200);                // Initialize serial data transmission and set baud rate
   Serial.println("Begin");
 
+  Wire.begin();                        // Initiate the Wire library and join the I2C bus as master
+
   /***********************************ESP32*************************************/
   WiFi.disconnect(true);               // Initial state - Wifi disabled
   WiFi.mode(WIFI_OFF);
+
   /*END*******************************ESP32*************************************/
+
+  /*************MAX30102 Pulse Oximeter and Heart-Rate Sensor******************/
+  byte ledBrightness = 32; // Options: 0=Off to 255=50mA
+  byte sampleAverage = 8; // Options: 1, 2, 4, 8, 16, 32
+  byte ledMode = 2; // Options: 1 = Red only, 2 = Red + IR, 3 = Red + IR + Green
+  int sampleRate = 800; // Options: 50, 100, 200, 400, 800, 1000, 1600, 3200
+  int pulseWidth = 215; // Options: 69, 118, 215, 411
+  int adcRange = 2048; // Options: 2048, 4096, 8192, 16384
+
+  particleSensor.begin(Wire, I2C_SPEED_FAST);
+  // Configure MAX3010X sensor with these settings
+  particleSensor.setup(ledBrightness, sampleAverage, ledMode, sampleRate, pulseWidth, adcRange);
+  /*END*********MAX30102 Pulse Oximeter and Heart-Rate Sensor******************/
 
   Serial.println("Setup Complete");
 }
