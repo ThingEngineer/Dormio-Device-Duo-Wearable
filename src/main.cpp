@@ -43,8 +43,8 @@ void loop() {
 
 
 void getNextHeartRateSample() {
-  redBuffer[hrBufferCounter] = particleSensor.getRed();
-  irBuffer[hrBufferCounter] = particleSensor.getIR();
+  redBuffer[hrBufferCounter] = hrSensor.getRed();
+  irBuffer[hrBufferCounter] = hrSensor.getIR();
   hrSensor.nextSample();
   hrBufferCounter++;
 }
