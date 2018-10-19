@@ -5,7 +5,7 @@ void setup() {
   Serial.begin(115200);                // Initialize serial data transmission and set baud rate
   Serial.println(F("Initializing"));
 
-  Wire.begin();                        // Initiate the Wire library and join the I2C bus as master
+  Wire.begin(21,22);                        // Initiate the Wire library and join the I2C bus as master
 
   /***********************************ESP32*************************************/
   WiFi.disconnect(true);               // Initial state - Wifi disabled
