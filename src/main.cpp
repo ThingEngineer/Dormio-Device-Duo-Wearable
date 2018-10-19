@@ -33,9 +33,19 @@ void setup() {
 void loop() {
     Serial.println("Program Loop");
 
+    getNextHeartRateSample();
+
     doHttpPost();
 
     delay(5000);
+}
+
+
+void getNextHeartRateSample(void) {
+  redBuffer[hrBufferCounter] = particleSensor.getRed();
+  irBuffer[hrBufferCounter] = particleSensor.getIR();
+  particleSensor.nextSample();
+  hrBufferCounter++;
 }
 
 

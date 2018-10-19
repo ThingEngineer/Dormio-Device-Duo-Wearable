@@ -33,6 +33,7 @@ MAX30105 particleSensor;
 /****************************************************************************
 * Function prototypes
 ****************************************************************************/
+void getNextHeartRateSample(void);
 void doHttpPost(void);
 
 
@@ -44,6 +45,12 @@ void doHttpPost(void);
 /****************************************************************************
 * Variable and constant declarations
 ****************************************************************************/
+#define ST 5              // Sampling time in seconds
+#define SF 50             // Sampling frequency in Hz - this should match MAX30102 (sampleRate / sampleAverage / 2) (the 2 is because there is one sample for each, ir & red)
+const byte BUFFER_SIZE = (ST * SF);
 
+byte hrBufferCounter = 0;               // Data points captured/counted
+int32_t irBuffer[BUFFER_SIZE];          // Infrared LED sensor data
+int32_t redBuffer[BUFFER_SIZE];         // Red LED sensor data
 
 #endif /* MAIN_H */
