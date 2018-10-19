@@ -3,7 +3,7 @@
 
 void setup() {
   Serial.begin(115200);                // Initialize serial data transmission and set baud rate
-  Serial.println("Initializing");
+  Serial.println(F("Initializing"));
 
   Wire.begin();                        // Initiate the Wire library and join the I2C bus as master
 
@@ -26,7 +26,7 @@ void setup() {
   particleSensor.setup(ledBrightness, sampleAverage, ledMode, sampleRate, pulseWidth, adcRange);
   /*END*********MAX30102 Pulse Oximeter and Heart-Rate Sensor******************/
 
-  Serial.println("Setup Complete");
+  Serial.println(F("Setup Complete"));
 }
 
 
@@ -34,7 +34,7 @@ void loop() {
 
   getNextHeartRateSample();
   if ( hrBufferCounter == SF ) normalizeRedLED();
-  if (hrBufferCounter == BUFFER_SIZE) doHttpPost();
+  if ( hrBufferCounter == BUFFER_SIZE ) doHttpPost();
 
 }
 
@@ -76,22 +76,22 @@ void normalizeRedLED(void) {
 
 
 void doHttpPost(void) {
-  Serial.println("Starting WiFi");
+  Serial.println(F("Starting WiFi"));
   WiFi.enableSTA(true);
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
 
-  while (WiFi.status() != WL_CONNECTED) { //Check for the connection
+  while ( WiFi.status() != WL_CONNECTED ) { //Check for the connection
 
     delay(250);
-    Serial.println("Connecting..");
+    Serial.println(F("Connecting.."));
 
   }
 
-  Serial.print("Connected to the WiFi network with IP: ");
+  Serial.print(F("Connected to the WiFi network with IP: "));
   Serial.println(WiFi.localIP());
 
-  if(WiFi.status()== WL_CONNECTED) { //Check WiFi connection status
+  if( WiFi.status() == WL_CONNECTED ) { //Check WiFi connection status
 
     HTTPClient http;
 
@@ -103,13 +103,13 @@ void doHttpPost(void) {
     // Send the actual POST request
     int httpResponseCode = http.POST("{ \"seconds-since-boot\": " + String(secondsSinceBoot) + ", \"data\": {\"test\": " + 123 + "} }");
 
-    if(httpResponseCode>0) {
+    if( httpResponseCode > 0 ) {
 
       Serial.println(httpResponseCode);   //Print return code
 
     } else {
 
-     Serial.print("Error on sending request: ");
+     Serial.print(F("Error on sending request: "));
      Serial.println(httpResponseCode);
 
     }
@@ -118,11 +118,11 @@ void doHttpPost(void) {
 
   } else {
 
-     Serial.println("WiFi connection error");
+     Serial.println(F("WiFi connection error"));
 
   }
 
   WiFi.disconnect(true);
   WiFi.mode(WIFI_OFF);
-  Serial.println("WiFi disconnected");
+  Serial.println(F("WiFi disconnected"));
 }
