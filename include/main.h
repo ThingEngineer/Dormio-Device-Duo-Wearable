@@ -18,6 +18,7 @@
 ****************************************************************************/
 #include "env.h"                       // Sensitive environment parameters
 #include <Arduino.h>                   // Main include file for the Arduino SDK
+#include <Wire.h>                      // Arduino I2C library
 #include <WiFi.h>                      // ESP32 Wifi support
 #include <HTTPClient.h>                // Library to easily make HTTP GET, POST and PUT requests to a web server
 #include <WiFiClientSecure.h>          // Base class that provides Client SSL to ESP32
