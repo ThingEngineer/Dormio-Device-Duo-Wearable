@@ -47,6 +47,35 @@ void getNextHeartRateSample(void) {
 }
 
 
+void normalizeRedLED(void) {
+  Serial.println(hrBufferCounter, DEC);
+  // Calculate Red & IR DC mean
+  redMean = 0;
+  irMean = 0;
+  int _hrBufferCounter = 0;
+  for (_hrBufferCounter = 0 ; _hrBufferCounter < SF ; _hrBufferCounter++) {
+    redMean += redBuffer[_hrBufferCounter];
+    irMean += irBuffer[_hrBufferCounter];
+  }
+  redMean = redMean/SF;
+  irMean = irMean/SF;
+
+  // Adjust red LED current if it is to far above or below IR LED reading
+  if ( irMean > (redMean + 8000) ) redPulseAmplitude++;
+  if ( irMean < (redMean - 8000) ) redPulseAmplitude--;
+
+  if ( redPulseAmplitudePrevious != redPulseAmplitude ) {
+
+    particleSensor.setPulseAmplitudeRed(redPulseAmplitude);   // Set new red LED current
+    hrBufferCounter = 0;    // If we had to make a change, red current is not stable this round, reset buffer
+
+    Serial.println(F("Normalizing Red LED"));
+
+  }
+  redPulseAmplitudePrevious = redPulseAmplitude;
+}
+
+
 void doHttpPost(void) {
   Serial.println("Starting WiFi");
   WiFi.enableSTA(true);
