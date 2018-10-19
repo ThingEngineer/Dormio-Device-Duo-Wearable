@@ -21,9 +21,9 @@ void setup() {
   int pulseWidth = 215; // Options: 69, 118, 215, 411
   int adcRange = 2048; // Options: 2048, 4096, 8192, 16384
 
-  particleSensor.begin(Wire, I2C_SPEED_FAST);
+  hrSensor.begin(Wire, I2C_SPEED_FAST);
   // Configure MAX3010X sensor with these settings
-  particleSensor.setup(ledBrightness, sampleAverage, ledMode, sampleRate, pulseWidth, adcRange);
+  hrSensor.setup(ledBrightness, sampleAverage, ledMode, sampleRate, pulseWidth, adcRange);
 
   redPulseAmplitude = 32;   // Initial red LED pulse amplitude
   /*END*********MAX30102 Pulse Oximeter and Heart-Rate Sensor******************/
@@ -45,7 +45,7 @@ void loop() {
 void getNextHeartRateSample() {
   redBuffer[hrBufferCounter] = particleSensor.getRed();
   irBuffer[hrBufferCounter] = particleSensor.getIR();
-  particleSensor.nextSample();
+  hrSensor.nextSample();
   hrBufferCounter++;
 }
 
@@ -68,7 +68,7 @@ void normalizeRedLED() {
 
   if ( redPulseAmplitudePrevious != redPulseAmplitude ) {
 
-    particleSensor.setPulseAmplitudeRed(redPulseAmplitude);   // Set new red LED current
+    hrSensor.setPulseAmplitudeRed(redPulseAmplitude);   // Set new red LED current
     hrBufferCounter = 0;    // If we had to make a change, red current is not stable this round, reset buffer
 
     Serial.println(F("Normalizing Red LED"));
