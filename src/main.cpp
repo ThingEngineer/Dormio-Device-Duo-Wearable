@@ -71,8 +71,7 @@ void loop() {
 
   getNextHeartRateSample();
   if ( hrBufferCounter == SF ) normalizeRedLED();
-  if ( hrBufferCounter == BUFFER_SIZE ) doHttpPost();
-  digitalWrite( 25, !digitalRead(25) );
+  if ( hrBufferCounter == BUFFER_SIZE ) httpPost();
 
   // hapticFeedback.setWaveform(1, 1);    // Strong click 100%, see datasheet part 11.2
   // hapticFeedback.go();                 // Play the effect
