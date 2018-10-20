@@ -7,6 +7,8 @@ void setup() {
 
   Wire.begin(21,22);                   // Initiate the Wire library and join the I2C bus as master
 
+  hapticFeedback.begin();              // Initialize DRV2605 haptic feedback driver
+  hapticFeedback.selectLibrary(1);     // Set haptic feedback library
 
   /*************MAX30102 Pulse Oximeter and Heart-Rate Sensor******************/
   byte ledBrightness = 32; // Options: 0=Off to 255=50mA
@@ -72,6 +74,8 @@ void loop() {
   if ( hrBufferCounter == BUFFER_SIZE ) doHttpPost();
   digitalWrite( 25, !digitalRead(25) );
 
+  // hapticFeedback.setWaveform(1, 1);    // Strong click 100%, see datasheet part 11.2
+  // hapticFeedback.go();                 // Play the effect
 }
 
 

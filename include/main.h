@@ -20,6 +20,7 @@
 #include <MAX30105.h>                  // SparkFun MAX3010x Pulse and Proximity Sensor Library - https://github.com/sparkfun/SparkFun_MAX3010x_Sensor_Library
 #include <Adafruit_MLX90614.h>         // MLX90614 temperature sensor library - https://github.com/adafruit/Adafruit-MLX90614-Library
 #include <SparkFunLSM6DS3.h>           // LSM6DS3 accelerometer and gyroscope 6DoF IMU Library - https://github.com/ThingEngineer/SparkFun_LSM6DS3_Arduino_Library
+#include <Adafruit_DRV2605.h>          // DRV2605L Haptic Controller https://github.com/adafruit/Adafruit_DRV2605_Library
 
 
 /****************************************************************************
@@ -28,6 +29,7 @@
 MAX30105 hrSensor;
 Adafruit_MLX90614 tempSensor = Adafruit_MLX90614();
 LSM6DS3 IMU;
+Adafruit_DRV2605 hapticFeedback;
 
 
 /****************************************************************************
