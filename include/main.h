@@ -15,9 +15,8 @@
 #include "env.h"                       // Sensitive environment parameters
 #include <Arduino.h>                   // Main include file for the Arduino SDK
 #include <Wire.h>                      // Arduino I2C library
-#include <WiFi.h>                      // ESP32 Wifi support
-#include <HTTPClient.h>                // Library to easily make HTTP GET, POST and PUT requests to a web server
-#include <WiFiClientSecure.h>          // Base class that provides Client SSL to ESP32
+#include <ESP8266WiFi.h>               // ESP8266 core for Arduino
+#include <ESP8266HTTPClient.h>         // ESP8266 HTTP client
 #include <MAX30105.h>                  // SparkFun MAX3010x Pulse and Proximity Sensor Library - https://github.com/sparkfun/SparkFun_MAX3010x_Sensor_Library
 #include <Adafruit_MLX90614.h>         // MLX90614 temperature sensor library - https://github.com/adafruit/Adafruit-MLX90614-Library
 #include <SparkFunLSM6DS3.h>           // LSM6DS3 accelerometer and gyroscope 6DoF IMU Library - https://github.com/ThingEngineer/SparkFun_LSM6DS3_Arduino_Library
@@ -36,7 +35,7 @@ LSM6DS3 IMU;
 ****************************************************************************/
 void getNextHeartRateSample();
 void normalizeRedLED();
-void doHttpPost();
+void httpPost();
 
 
 /****************************************************************************

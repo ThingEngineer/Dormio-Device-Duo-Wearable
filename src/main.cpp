@@ -7,11 +7,6 @@ void setup() {
 
   Wire.begin(21,22);                   // Initiate the Wire library and join the I2C bus as master
 
-  /***********************************ESP32*************************************/
-  WiFi.disconnect(true);               // Initial state - Wifi disabled
-  WiFi.mode(WIFI_OFF);
-
-  /*END*******************************ESP32*************************************/
 
   /*************MAX30102 Pulse Oximeter and Heart-Rate Sensor******************/
   byte ledBrightness = 32; // Options: 0=Off to 255=50mA
@@ -30,6 +25,17 @@ void setup() {
 
   tempSensor.begin();                  // Initilize MLX90614 temperature sensor
   IMU.begin();                         // Initialize LSM6DS3 6DOF IMU
+  /***********************************ESP8266*********************************/
+  Serial.print("WiFi");
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(ssid, password);
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(250);
+    Serial.print(".");
+  }
+  Serial.print(F("OK - IP address: "));
+  Serial.println(WiFi.localIP());
+  /*END*******************************ESP8266*********************************/
 
   pinMode(25, OUTPUT);                 // ocilliscope loop speed test ping
 
@@ -105,54 +111,46 @@ void normalizeRedLED() {
 }
 
 
-void doHttpPost() {
-  Serial.println(F("Starting WiFi"));
-  WiFi.enableSTA(true);
-  WiFi.mode(WIFI_STA);
-  WiFi.begin(ssid, password);
+void httpPost() {
+  // Create some test data
+  String secondsSinceBoot = String(millis()/1000);
+  String PostData = "{ \"seconds-since-boot\": " + String(secondsSinceBoot) + ", \"data\": {\"test\": " + 123 + "} }";
 
-  while ( WiFi.status() != WL_CONNECTED ) { //Check for the connection
+  // Serial.println(F("WiFi"));
+  // WiFi.enableSTA(true); // Enable WiFi and connect
+  // WiFi.mode(WIFI_STA);
+  // WiFi.begin(ssid, password);
+  // while ( WiFi.status() != WL_CONNECTED ) // Check for the connection
+  // {
+  //   delay(500);
+  //   Serial.print(F("."));
+  // }
 
-    delay(250);
-    Serial.println(F("Connecting.."));
-
-  }
-
-  Serial.print(F("Connected to the WiFi network with IP: "));
-  Serial.println(WiFi.localIP());
-
-  if( WiFi.status() == WL_CONNECTED ) { //Check WiFi connection status
-
+  if( WiFi.status() == WL_CONNECTED ) // Check WiFi connection status
+  {
     HTTPClient http;
 
-    http.begin(post_url);  //Specify destination for HTTP request
-    http.addHeader("Content-Type", "application/json");             //Specify content-type header
+    http.begin(post_url); // Specify destination for HTTP request
+    http.addHeader("Content-Type", "application/json"); // Specify content-type
+    http.addHeader("Content-Length", String(PostData.length())); // Specify content length
 
-    // Make some test data
-    String secondsSinceBoot = String(millis()/1000);
-    // Send the actual POST request
-    int httpResponseCode = http.POST("{ \"seconds-since-boot\": " + String(secondsSinceBoot) + ", \"data\": {\"test\": " + 123 + "} }");
+    int httpResponseCode = http.POST(PostData); // Send the POST request
+    http.writeToStream(&Serial);
 
-    if( httpResponseCode > 0 ) {
-
-      Serial.println(httpResponseCode);   //Print return code
-
+    if( httpResponseCode > 0 )
+    {
+      Serial.println(httpResponseCode); // Print return code
     } else {
-
-     Serial.print(F("Error on sending request: "));
+     Serial.print(F("Error: "));
      Serial.println(httpResponseCode);
-
     }
 
-    http.end();  //Free resources
-
+    http.end(); // Free resources
   } else {
-
-     Serial.println(F("WiFi connection error"));
-
+     Serial.println(F("No WiFi"));
   }
 
-  WiFi.disconnect(true);
-  WiFi.mode(WIFI_OFF);
-  Serial.println(F("WiFi disconnected"));
+  // WiFi.disconnect(true); // Disable WiFi
+  // WiFi.mode(WIFI_OFF);
+  // Serial.println(F("WiFi Off"));
 }
