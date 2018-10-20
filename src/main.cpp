@@ -7,10 +7,12 @@ void setup() {
 
   Wire.begin(21,22);                   // Initiate the Wire library and join the I2C bus as master
 
+  tempSensor.begin();                  // Initilize MLX90614 temperature sensor
+  IMU.begin();                         // Initialize LSM6DS3 6DOF IMU
   hapticFeedback.begin();              // Initialize DRV2605 haptic feedback driver
   hapticFeedback.selectLibrary(1);     // Set haptic feedback library
 
-  /*************MAX30102 Pulse Oximeter and Heart-Rate Sensor******************/
+  /**********************************MAX30102*********************************/
   byte ledBrightness = 32; // Options: 0=Off to 255=50mA
   byte sampleAverage = 8; // Options: 1, 2, 4, 8, 16, 32
   byte ledMode = 2; // Options: 1 = Red only, 2 = Red + IR, 3 = Red + IR + Green
@@ -18,15 +20,10 @@ void setup() {
   int pulseWidth = 215; // Options: 69, 118, 215, 411
   int adcRange = 2048; // Options: 2048, 4096, 8192, 16384
 
-  if ( hrSensor.begin(Wire, I2C_SPEED_FAST) == false ) Serial.println(F("MAX30102 Error"));
-  // Configure MAX3010X sensor with these settings
+  if ( hrSensor.begin() == false ) Serial.println(F("MAX30102 Error"));
   hrSensor.setup(ledBrightness, sampleAverage, ledMode, sampleRate, pulseWidth, adcRange);
+  /*END******************************MAX30102*********************************/
 
-  redPulseAmplitude = 32;   // Initial red LED pulse amplitude
-  /*END*********MAX30102 Pulse Oximeter and Heart-Rate Sensor******************/
-
-  tempSensor.begin();                  // Initilize MLX90614 temperature sensor
-  IMU.begin();                         // Initialize LSM6DS3 6DOF IMU
   /***********************************ESP8266*********************************/
   Serial.print("WiFi");
   WiFi.mode(WIFI_STA);
@@ -41,33 +38,38 @@ void setup() {
 
   pinMode(25, OUTPUT);                 // ocilliscope loop speed test ping
 
-  delay(1000);
+  delay(500);
   Serial.println(F("Setup Complete"));
 }
 
 
 void loop() {
 
-  Serial.print(tempSensor.readAmbientTempF(), DEC);
-  Serial.print(F(","));
-  Serial.print(tempSensor.readObjectTempF(), DEC);
+  // Serial.print(tempSensor.readAmbientTempF());
+  // Serial.print(F(","));
+  // Serial.println(tempSensor.readObjectTempF());
 
-  Serial.print(F(","));
-  Serial.print(IMU.readFloatAccelX(), 4);
-  Serial.print(F(","));
-  Serial.print(IMU.readFloatAccelY(), 4);
-  Serial.print(F(","));
-  Serial.print(IMU.readFloatAccelZ(), 4);
-  Serial.print(F(","));
-  Serial.print(IMU.readFloatGyroX(), 4);
-  Serial.print(F(","));
-  Serial.print(IMU.readFloatGyroY(), 4);
-  Serial.print(F(","));
-  Serial.print(IMU.readFloatGyroZ(), 4);
-  Serial.print(F(","));
-  Serial.print(IMU.readTempC(), 4);
-  Serial.print(F(","));
-  Serial.println(IMU.readTempF(), 4);
+  // Serial.print(F(","));
+  // Serial.print(hrSensor.getIR());
+  // Serial.print(F(","));
+  // Serial.print(hrSensor.getRed());
+
+  // Serial.print(F(","));
+  // Serial.print(IMU.readFloatAccelX(), 4);
+  // Serial.print(F(","));
+  // Serial.print(IMU.readFloatAccelY(), 4);
+  // Serial.print(F(","));
+  // Serial.print(IMU.readFloatAccelZ(), 4);
+  // Serial.print(F(","));
+  // Serial.print(IMU.readFloatGyroX(), 4);
+  // Serial.print(F(","));
+  // Serial.print(IMU.readFloatGyroY(), 4);
+  // Serial.print(F(","));
+  // Serial.print(IMU.readFloatGyroZ(), 4);
+  // Serial.print(F(","));
+  // Serial.print(IMU.readTempC(), 4);
+  // Serial.print(F(","));
+  // Serial.println(IMU.readTempF(), 4);
 
   getNextHeartRateSample();
   if ( hrBufferCounter == SF ) normalizeRedLED();
@@ -75,6 +77,8 @@ void loop() {
 
   // hapticFeedback.setWaveform(1, 1);    // Strong click 100%, see datasheet part 11.2
   // hapticFeedback.go();                 // Play the effect
+
+  digitalWrite( 25, !digitalRead(25) );
 }
 
 
