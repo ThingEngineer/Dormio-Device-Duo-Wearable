@@ -21,6 +21,8 @@
 #include <Adafruit_MLX90614.h>         // MLX90614 temperature sensor library - https://github.com/adafruit/Adafruit-MLX90614-Library
 #include <SparkFunLSM6DS3.h>           // LSM6DS3 accelerometer and gyroscope 6DoF IMU Library - https://github.com/ThingEngineer/SparkFun_LSM6DS3_Arduino_Library
 #include <Adafruit_DRV2605.h>          // DRV2605L Haptic Controller https://github.com/adafruit/Adafruit_DRV2605_Library
+#include <Adafruit_SSD1306.h>          // SSD1306 OLED driver library for 'monochrome' 128x64 and 128x32 OLEDs - https://github.com/adafruit/Adafruit_SSD1306
+#include <Adafruit_GFX.h>              // Adafruit GFX Library
 
 
 /****************************************************************************
@@ -30,7 +32,8 @@ MAX30105 hrSensor;
 Adafruit_MLX90614 tempSensor = Adafruit_MLX90614();
 LSM6DS3 IMU;
 Adafruit_DRV2605 hapticFeedback;
-
+#define OLED_RESET 16
+Adafruit_SSD1306 display(OLED_RESET);
 
 /****************************************************************************
 * Function prototypes

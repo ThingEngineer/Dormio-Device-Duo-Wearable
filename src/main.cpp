@@ -34,9 +34,19 @@ void setup() {
   Serial.println(WiFi.localIP());
   /*END*******************************ESP8266*********************************/
 
-  pinMode(25, OUTPUT);                 // ocilliscope loop speed test ping
+  /************************************OLED***********************************/
+  display.begin(SSD1306_SWITCHCAPVCC, 0x3C); // initialize with the I2C addr 0x3C (for the 128x32)
+  display.clearDisplay();
+  display.setTextSize(1);
+  display.setTextColor(WHITE);
+  display.setCursor(0,9);
+  display.println(F("Dormio Device Duo"));
+  display.println(F("--==Deep Dream==--"));
+  display.display();
+  /*END********************************OLED***********************************/
 
-  delay(500);
+  pinMode(25, OUTPUT); // Ocilliscope loop speed test ping
+
   Serial.println(F("Setup Complete"));
 }
 
