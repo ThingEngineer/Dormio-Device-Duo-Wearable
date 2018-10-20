@@ -5,8 +5,6 @@ void setup() {
   Serial.begin(115200);                // Initialize serial data transmission and set baud rate
   Serial.println(F("Initializing"));
 
-  Wire.begin(21,22);                   // Initiate the Wire library and join the I2C bus as master
-
   tempSensor.begin();                  // Initilize MLX90614 temperature sensor
   IMU.begin();                         // Initialize LSM6DS3 6DOF IMU
   hapticFeedback.begin();              // Initialize DRV2605 haptic feedback driver
