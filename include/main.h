@@ -58,9 +58,5 @@ const byte BUFFER_SIZE = (ST * SF);    // MAX30102 buffer size
 byte hrBufferCounter = 0;              // Data points captured/counted
 int32_t irBuffer[BUFFER_SIZE];         // Infrared LED sensor data
 int32_t redBuffer[BUFFER_SIZE];        // Red LED sensor data
-int32_t redMean = 0;
-int32_t irMean = 0;
-byte redPulseAmplitude = 32;           // Red LED current values (LED Pulse Amplitude)
-byte redPulseAmplitudePrevious;        // Previous ^
 
 #endif /* MAIN_H */

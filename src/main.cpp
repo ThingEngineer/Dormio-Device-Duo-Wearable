@@ -52,7 +52,6 @@ void setup() {
 
 
 void loop() {
-
   // Serial.print(tempSensor.readAmbientTempF());
   // Serial.print(F(","));
   // Serial.println(tempSensor.readObjectTempF());
@@ -80,7 +79,6 @@ void loop() {
   // Serial.println(IMU.readTempF(), 4);
 
   getNextHeartRateSample();
-  if ( hrBufferCounter == SF ) normalizeRedLED();
   if ( hrBufferCounter == BUFFER_SIZE ) httpPost();
 
   // hapticFeedback.setWaveform(1, 1);    // Strong click 100%, see datasheet part 11.2
@@ -98,32 +96,18 @@ void getNextHeartRateSample() {
 }
 
 
-void normalizeRedLED() {
-  // Calculate Red & IR DC mean
-  redMean = 0;
-  irMean = 0;
-  int _hrBufferCounter = 0;
-  for (_hrBufferCounter = 0 ; _hrBufferCounter < SF ; _hrBufferCounter++) {
-    redMean += redBuffer[_hrBufferCounter];
-    irMean += irBuffer[_hrBufferCounter];
+  for ( int i = 0; i < 4; i++ )
+  {
+    irBuffer[(hrSampleCounter * 4) + i] = (uint8_t) ( bufferTemp >> (8 * (i+1)) );
   }
-  redMean = redMean/SF;
-  irMean = irMean/SF;
 
-  // Adjust red LED current if it is to far above or below IR LED reading
-  if ( irMean > (redMean + 8000) ) redPulseAmplitude++;
-  if ( irMean < (redMean - 8000) ) redPulseAmplitude--;
-
-  if ( redPulseAmplitudePrevious != redPulseAmplitude ) {
-
-    hrSensor.setPulseAmplitudeRed(redPulseAmplitude);   // Set new red LED current
-    hrBufferCounter = 0;    // If we had to make a change, red current is not stable this round, reset buffer
-
-    Serial.println("Normalizing Red LED " + String(redPulseAmplitude));
-
-  }
-  redPulseAmplitudePrevious = redPulseAmplitude;
+  hrSensor.nextSample();
+  hrSampleCounter++;
 }
+
+
+
+  }
 
 
 void httpPost() {
