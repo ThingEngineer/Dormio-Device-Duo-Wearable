@@ -104,7 +104,7 @@ void normalizeRedLED() {
     hrSensor.setPulseAmplitudeRed(redPulseAmplitude);   // Set new red LED current
     hrBufferCounter = 0;    // If we had to make a change, red current is not stable this round, reset buffer
 
-    Serial.println(F("Normalizing Red LED"));
+    Serial.println("Normalizing Red LED " + String(redPulseAmplitude));
 
   }
   redPulseAmplitudePrevious = redPulseAmplitude;

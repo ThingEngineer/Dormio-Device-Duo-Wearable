@@ -55,7 +55,7 @@ int32_t irBuffer[BUFFER_SIZE];         // Infrared LED sensor data
 int32_t redBuffer[BUFFER_SIZE];        // Red LED sensor data
 int32_t redMean = 0;
 int32_t irMean = 0;
-byte redPulseAmplitude;                // Red LED current values (LED Pulse Amplitude)
+byte redPulseAmplitude = 32;           // Red LED current values (LED Pulse Amplitude)
 byte redPulseAmplitudePrevious;        // Previous ^
 
 #endif /* MAIN_H */
