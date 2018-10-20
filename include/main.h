@@ -35,6 +35,7 @@ Adafruit_DRV2605 hapticFeedback;
 #define OLED_RESET 16
 Adafruit_SSD1306 display(OLED_RESET);
 
+
 /****************************************************************************
 * Function prototypes
 ****************************************************************************/
@@ -53,10 +54,11 @@ void httpPost();
 ****************************************************************************/
 #define ST 5                           // Sampling time in seconds
 #define SF 50                          // Sampling frequency in Hz - this should match MAX30102 (sampleRate / sampleAverage / 2) (2 because there is one sample for each, ir & red)
-const byte BUFFER_SIZE = (ST * SF);    // MAX30102 buffer size
+#define SAMPLE_COUNT (ST * SF)
+const uint16_t HR_BUFFER_SIZE = (SAMPLE_COUNT * 4); // MAX30102 buffer size sample count * 4(bytes per sample)
+byte hrSampleCounter = 0;              // Samples read from sensor
+uint8_t irBuffer[HR_BUFFER_SIZE];      // Infrared LED sensor data
+uint8_t redBuffer[HR_BUFFER_SIZE];     // Red LED sensor data
 
-byte hrBufferCounter = 0;              // Data points captured/counted
-int32_t irBuffer[BUFFER_SIZE];         // Infrared LED sensor data
-int32_t redBuffer[BUFFER_SIZE];        // Red LED sensor data
 
 #endif /* MAIN_H */

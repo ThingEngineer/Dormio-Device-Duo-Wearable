@@ -79,7 +79,7 @@ void loop() {
   // Serial.println(IMU.readTempF(), 4);
 
   getNextHeartRateSample();
-  if ( hrBufferCounter == BUFFER_SIZE ) httpPost();
+  if ( hrSampleCounter == SAMPLE_COUNT ) httpPost();
 
   // hapticFeedback.setWaveform(1, 1);    // Strong click 100%, see datasheet part 11.2
   // hapticFeedback.go();                 // Play the effect
@@ -87,14 +87,10 @@ void loop() {
   digitalWrite( 25, !digitalRead(25) );
 }
 
-
 void getNextHeartRateSample() {
-  redBuffer[hrBufferCounter] = hrSensor.getRed();
-  irBuffer[hrBufferCounter] = hrSensor.getIR();
-  hrSensor.nextSample();
-  hrBufferCounter++;
-}
-
+  static uint32_t bufferTemp;
+  // redBuffer[hrSampleCounter] = hrSensor.getRed();
+  bufferTemp = hrSensor.getIR();
 
   for ( int i = 0; i < 4; i++ )
   {
