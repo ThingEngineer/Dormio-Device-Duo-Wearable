@@ -40,7 +40,6 @@ Adafruit_SSD1306 display(OLED_RESET);
 * Function prototypes
 ****************************************************************************/
 void getNextHeartRateSample();
-void normalizeRedLED();
 void httpPost();
 
 
