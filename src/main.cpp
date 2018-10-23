@@ -129,6 +129,7 @@ void sampleRateSingle() {
 
 
 void httpPost() {
+  Serial.println(F("Post"));
   hrSampleCounter = 0;
 
   // Create some test data
