@@ -129,9 +129,11 @@ void sampleRateSingle() {
 
 
 void httpPost() {
+  hrSampleCounter = 0;
+
   // Create some test data
-  String secondsSinceBoot = String(millis()/1000);
-  String PostData = "{ \"seconds-since-boot\": " + String(secondsSinceBoot) + ", \"data\": {\"test\": " + 123 + "} }";
+  // String secondsSinceBoot = String(millis()/1000);
+  // char* jsonData = "{ \"seconds-since-boot\": " + String(secondsSinceBoot) + ", \"data\": {\"test\": " + 123 + "} }";
 
   // Serial.println(F("WiFi"));
   // WiFi.enableSTA(true); // Enable WiFi and connect
@@ -151,8 +153,7 @@ void httpPost() {
     http.addHeader(F("Content-Type"), F("application/json")); // Specify content-type
     http.addHeader(F("Content-Length"), String(BUFFER_SIZE)); // Specify content length
 
-    int httpResponseCode = http.POST(PostData); // Send the POST request
-    http.writeToStream(&Serial);
+    uint16_t httpResponseCode = http.POST(dataBuffer, BUFFER_SIZE); // Send the POST request
 
     if( httpResponseCode > 0 )
     {
