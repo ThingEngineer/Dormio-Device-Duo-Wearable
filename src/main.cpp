@@ -126,8 +126,8 @@ void httpPost() {
     HTTPClient http;
 
     http.begin(post_url); // Specify destination for HTTP request
-    http.addHeader("Content-Type", "application/json"); // Specify content-type
-    http.addHeader("Content-Length", String(PostData.length())); // Specify content length
+    http.addHeader(F("Content-Type"), F("application/json")); // Specify content-type
+    http.addHeader(F("Content-Length"), String(BUFFER_SIZE)); // Specify content length
 
     int httpResponseCode = http.POST(PostData); // Send the POST request
     http.writeToStream(&Serial);
