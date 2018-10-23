@@ -23,6 +23,8 @@
 #include <Adafruit_DRV2605.h>          // DRV2605L Haptic Controller https://github.com/adafruit/Adafruit_DRV2605_Library
 #include <Adafruit_SSD1306.h>          // SSD1306 OLED driver library for 'monochrome' 128x64 and 128x32 OLEDs - https://github.com/adafruit/Adafruit_SSD1306
 #include <Adafruit_GFX.h>              // Adafruit GFX Library
+#include <movingAvg.h>                 // Integer moving average library
+#include <movingAvgFloat.h>            // Floating point moving average library
 
 
 /****************************************************************************
@@ -34,6 +36,13 @@ LSM6DS3 IMU;
 Adafruit_DRV2605 hapticFeedback;
 #define OLED_RESET 16
 Adafruit_SSD1306 display(OLED_RESET);
+movingAvg gsrAvg(50);
+movingAvgFloat accelXAvg(50);
+movingAvgFloat accelYAvg(50);
+movingAvgFloat accelZAvg(50);
+movingAvgFloat gyroXAvg(50);
+movingAvgFloat gyroYAvg(50);
+movingAvgFloat gyroZAvg(50);
 
 
 /****************************************************************************
