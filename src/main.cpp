@@ -11,12 +11,12 @@ void setup() {
   hapticFeedback.selectLibrary(1);     // Set haptic feedback library
 
   /**********************************MAX30102*********************************/
-  byte ledBrightness = 32; // Options: 0=Off to 255=50mA
-  byte sampleAverage = 8; // Options: 1, 2, 4, 8, 16, 32
-  byte ledMode = 2; // Options: 1 = Red only, 2 = Red + IR, 3 = Red + IR + Green
-  int sampleRate = 800; // Options: 50, 100, 200, 400, 800, 1000, 1600, 3200
-  int pulseWidth = 215; // Options: 69, 118, 215, 411
-  int adcRange = 2048; // Options: 2048, 4096, 8192, 16384
+  uint8_t ledBrightness = 32; // Options: 0=Off to 255=50mA
+  uint8_t sampleAverage = 8; // Options: 1, 2, 4, 8, 16, 32
+  uint8_t ledMode = 2; // Options: 1 = Red only, 2 = Red + IR, 3 = Red + IR + Green
+  uint16_t sampleRate = 800; // Options: 50, 100, 200, 400, 800, 1000, 1600, 3200
+  uint16_t pulseWidth = 215; // Options: 69, 118, 215, 411
+  uint16_t adcRange = 2048; // Options: 2048, 4096, 8192, 16384
 
   if ( hrSensor.begin() == false ) Serial.println(F("MAX30102 Error"));
   hrSensor.setup(ledBrightness, sampleAverage, ledMode, sampleRate, pulseWidth, adcRange);
