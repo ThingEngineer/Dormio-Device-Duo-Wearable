@@ -78,8 +78,14 @@ void loop() {
   // Serial.print(F(","));
   // Serial.println(IMU.readTempF(), 4);
 
-  getNextHeartRateSample();
-  if ( hrSampleCounter == SAMPLE_COUNT ) httpPost();
+  sampleRateFull(); // Full sample rate
+
+  if ( hrSampleCounter % SF == 0) sampleRateModSF(); // Sample rate / SF
+
+  if ( hrSampleCounter == SAMPLE_COUNT ) {
+    sampleRateSingle(); // Minimum sample rate
+    httpPost(); // Sample cycle complete, send data
+  }
 
   // hapticFeedback.setWaveform(1, 1);    // Strong click 100%, see datasheet part 11.2
   // hapticFeedback.go();                 // Play the effect
@@ -87,14 +93,24 @@ void loop() {
   digitalWrite( 25, !digitalRead(25) );
 }
 
-void getNextHeartRateSample() {
-  static uint32_t bufferTemp;
-  // redBuffer[hrSampleCounter] = hrSensor.getRed();
-  bufferTemp = hrSensor.getIR();
 
-  for ( int i = 0; i < 4; i++ )
+void sampleRateFull() {
+  uint32_t irbufferTemp, redbufferTemp; // Get new ir and red sensor readings
+  irbufferTemp = hrSensor.getIR();
+  redbufferTemp = hrSensor.getRed();
+
+  uint16_t _byteOffset;
+  uint8_t _shiftOffset;
+  for ( int i = 0; i < 4; i++ ) // Load sensor data into data buffer array (Little endian unsigned long to unsigned char[4])
   {
-    irBuffer[(hrSampleCounter * 4) + i] = (uint8_t) ( bufferTemp >> (8 * (i+1)) );
+    _byteOffset = ((hrSampleCounter * 4) + i);
+    _shiftOffset = (8 * i);
+
+    dataBuffer[IR_OFFSET + _byteOffset] = ( irbufferTemp >> _shiftOffset );
+    checksum = checksum ^ dataBuffer[IR_OFFSET + _byteOffset];
+
+    dataBuffer[RED_OFFSET + _byteOffset] = ( redbufferTemp >> _shiftOffset );
+    checksum = checksum ^ dataBuffer[RED_OFFSET + _byteOffset];
   }
 
   hrSensor.nextSample();
@@ -102,8 +118,14 @@ void getNextHeartRateSample() {
 }
 
 
+void sampleRateModSF() {
 
-  }
+}
+
+
+void sampleRateSingle() {
+
+}
 
 
 void httpPost() {
