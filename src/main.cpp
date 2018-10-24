@@ -45,13 +45,14 @@ void setup() {
   display.display();
   /*END********************************OLED***********************************/
 
-  gsrAvg.begin();
   accelXAvg.begin();
   accelYAvg.begin();
   accelZAvg.begin();
   gyroXAvg.begin();
   gyroYAvg.begin();
   gyroZAvg.begin();
+
+  pinMode(GSRpin, INPUT);
 
   pinMode(25, OUTPUT); // Ocilliscope loop speed test ping
 
