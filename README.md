@@ -1,4 +1,4 @@
-# Dormio-Device-Due-Sensors
-Dormio Device Due - Wearable Device Sensor Platform
+# Dormio-Device-Duo-Sensors
+Dormio Device Duo - Wearable Device Sensor Platform
 
-This repository contains the code that runs on the Dormio Device Due wearable device sensor platform.
+This repository contains the code that runs on the Dormio Device Duo wearable device sensor platform.
