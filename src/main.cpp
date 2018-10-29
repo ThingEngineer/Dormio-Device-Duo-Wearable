@@ -3,7 +3,6 @@
 
 void setup() {
   Serial.begin(115200);                // Initialize serial data transmission and set baud rate
-  Serial.println(F("Initializing"));
 
   Wire.begin(4,5);
   tempSensor.begin();                  // Initilize MLX90614 temperature sensor
@@ -58,22 +57,10 @@ void setup() {
   /*END*******************************ESP8266*********************************/
 
   pinMode(GSRpin, INPUT);
-
-  pinMode(25, OUTPUT); // Ocilliscope loop speed test ping
-
-  Serial.println(F("Setup Complete"));
 }
 
 
 void loop() {
-  // Serial.print(tempSensor.readAmbientTempF());
-  // Serial.print(F(","));
-  // Serial.println(tempSensor.readObjectTempF());
-
-  // Serial.print(F(","));
-  // Serial.print(hrSensor.getIR());
-  // Serial.print(F(","));
-  // Serial.print(hrSensor.getRed());
   if ( fullSampleCounter % HALF_SF == 0) sampleRateModHalfSF(); // SAMPLE_COUNT / HALF_SF (2 per second)
 
   if ( fullSampleCounter % HALF_SF == 0) sampleRateModHalfSF(); // SAMPLE_COUNT / HALF_SF (2 per second)
@@ -86,9 +73,6 @@ void loop() {
     sampleRateSingle(); // Minimum sample rate
     httpPost(); // Sample cycle complete, send data
   }
-
-
-  digitalWrite( 25, !digitalRead(25) );
 }
 
 
@@ -142,23 +126,6 @@ void sampleRateSingle() {
 
 
 void httpPost() {
-  Serial.println(F("Post"));
-  hrSampleCounter = 0;
-
-  // Create some test data
-  // String secondsSinceBoot = String(millis()/1000);
-  // char* jsonData = "{ \"seconds-since-boot\": " + String(secondsSinceBoot) + ", \"data\": {\"test\": " + 123 + "} }";
-
-  // Serial.println(F("WiFi"));
-  // WiFi.enableSTA(true); // Enable WiFi and connect
-  // WiFi.mode(WIFI_STA);
-  // WiFi.begin(ssid, password);
-  // while ( WiFi.status() != WL_CONNECTED ) // Check for the connection
-  // {
-  //   delay(500);
-  //   Serial.print(F("."));
-  // }
-
   if( WiFi.status() == WL_CONNECTED ) // Check WiFi connection status
   {
     HTTPClient http;
@@ -171,19 +138,10 @@ void httpPost() {
 
     if( httpResponseCode > 0 )
     {
-      Serial.println(httpResponseCode); // Print return code
-    } else {
-     Serial.print(F("Error: "));
-     Serial.println(httpResponseCode);
       // hapticFeedback.go();                 // Play the effect
     }
 
     http.end(); // Free resources
   } else {
-     Serial.println(F("No WiFi"));
   }
-
-  // WiFi.disconnect(true); // Disable WiFi
-  // WiFi.mode(WIFI_OFF);
-  // Serial.println(F("WiFi Off"));
 }
