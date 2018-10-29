@@ -61,6 +61,7 @@ void httpPost();
 ****************************************************************************/
 #define ST 5                           // Sampling time in seconds
 #define SF 50                          // Sampling frequency in Hz - this should match MAX30102 (sampleRate / sampleAverage / 2) (2 because there is one sample for each, ir & red)
+#define HALF_SF (SF / 2)               // Sampling frequency / 2
 #define SAMPLE_COUNT (ST * SF)         // MAX30102 sample count per cycle
 
 // Data array member sizes

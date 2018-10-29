@@ -71,23 +71,9 @@ void loop() {
   // Serial.print(hrSensor.getIR());
   // Serial.print(F(","));
   // Serial.print(hrSensor.getRed());
+  if ( fullSampleCounter % HALF_SF == 0) sampleRateModHalfSF(); // SAMPLE_COUNT / HALF_SF (2 per second)
 
-  // Serial.print(F(","));
-  // Serial.print(IMU.readFloatAccelX(), 4);
-  // Serial.print(F(","));
-  // Serial.print(IMU.readFloatAccelY(), 4);
-  // Serial.print(F(","));
-  // Serial.print(IMU.readFloatAccelZ(), 4);
-  // Serial.print(F(","));
-  // Serial.print(IMU.readFloatGyroX(), 4);
-  // Serial.print(F(","));
-  // Serial.print(IMU.readFloatGyroY(), 4);
-  // Serial.print(F(","));
-  // Serial.print(IMU.readFloatGyroZ(), 4);
-  // Serial.print(F(","));
-  // Serial.print(IMU.readTempC(), 4);
-  // Serial.print(F(","));
-  // Serial.println(IMU.readTempF(), 4);
+  if ( fullSampleCounter % HALF_SF == 0) sampleRateModHalfSF(); // SAMPLE_COUNT / HALF_SF (2 per second)
 
   sampleRateFull(); // Full sample rate
 
@@ -107,6 +93,21 @@ void sampleRateFull() {
   uint32_t irbufferTemp, redbufferTemp; // Get new ir and red sensor readings
   irbufferTemp = hrSensor.getIR();
   redbufferTemp = hrSensor.getRed();
+
+void sampleRateModHalfSF() {
+  // Get and load IMU redings to data buffer
+  loadFloatBuffer(IMU.readFloatAccelX(), modSFSampleCounter, ACCEL_X_OFFSET);
+  loadFloatBuffer(IMU.readFloatAccelY(), modSFSampleCounter, ACCEL_Y_OFFSET);
+  loadFloatBuffer(IMU.readFloatAccelZ(), modSFSampleCounter, ACCEL_Z_OFFSET);
+  loadFloatBuffer(IMU.readFloatGyroX(), modSFSampleCounter, GYRO_X_OFFSET);
+  loadFloatBuffer(IMU.readFloatGyroY(), modSFSampleCounter, GYRO_Y_OFFSET);
+  loadFloatBuffer(IMU.readFloatGyroZ(), modSFSampleCounter, GYRO_Z_OFFSET);
+
+  load16Buffer(analogRead(GSRpin), modSFSampleCounter, GSR_OFFSET); // Get and load GSR reding to data buffer
+
+  modSFSampleCounter++;
+}
+
 
   uint16_t _byteOffset;
   uint8_t _shiftOffset;
