@@ -26,18 +26,6 @@ void setup() {
   hrSensor.readTemperature(); // Initial temperture reading
   /*END******************************MAX30102*********************************/
 
-  /***********************************ESP8266*********************************/
-  Serial.print("WiFi");
-  WiFi.mode(WIFI_STA);
-  WiFi.begin(ssid, password);
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(250);
-    Serial.print(".");
-  }
-  Serial.print(F("OK - IP address: "));
-  Serial.println(WiFi.localIP());
-  /*END*******************************ESP8266*********************************/
-
   /************************************OLED***********************************/
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C); // initialize with the I2C addr 0x3C (for the 128x32)
   display.clearDisplay();
@@ -49,6 +37,25 @@ void setup() {
   display.display();
   /*END********************************OLED***********************************/
 
+  /***********************************ESP8266*********************************/
+  display.clearDisplay();
+  display.setCursor(0,0);
+  display.println(F("Connecting to WiFi"));
+  display.display();
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(ssid, password);
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(250);
+    display.print(F("."));
+    display.display();
+  }
+  display.clearDisplay();
+  display.setCursor(0,0);
+  display.println(F("Connected OK"));
+  display.println(F("IP Address:"));
+  display.println(WiFi.localIP());
+  display.display();
+  /*END*******************************ESP8266*********************************/
 
   pinMode(GSRpin, INPUT);
 
