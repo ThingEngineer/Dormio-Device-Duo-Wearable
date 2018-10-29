@@ -31,9 +31,10 @@ void setup() {
   display.setTextSize(1);
   display.setTextColor(WHITE);
   display.setCursor(0,9);
-  display.println(F("Dormio Device Duo"));
-  display.println(F("--==Deep Dream==--"));
+  display.println(F("  Dormio Device Duo"));
+  display.println(F("  --==Deep Dream==--"));
   display.display();
+  delay(1000);
   /*END********************************OLED***********************************/
 
   /***********************************ESP8266*********************************/
