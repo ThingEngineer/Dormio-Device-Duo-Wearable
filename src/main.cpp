@@ -7,8 +7,10 @@ void setup() {
 
   tempSensor.begin();                  // Initilize MLX90614 temperature sensor
   IMU.begin();                         // Initialize LSM6DS3 6DOF IMU
-  hapticFeedback.begin();              // Initialize DRV2605 haptic feedback driver
-  hapticFeedback.selectLibrary(1);     // Set haptic feedback library
+  // hapticFeedback.begin();              // Initialize DRV2605 haptic feedback driver
+  // hapticFeedback.setMode(DRV2605_MODE_INTTRIG);
+  // hapticFeedback.selectLibrary(1);     // Set haptic feedback library
+  // hapticFeedback.setWaveform(1, 1);    // Strong click 100%, see datasheet part 11.2
 
   /**********************************MAX30102*********************************/
   uint8_t ledBrightness = 32; // Options: 0=Off to 255=50mA
@@ -96,8 +98,6 @@ void loop() {
     httpPost(); // Sample cycle complete, send data
   }
 
-  // hapticFeedback.setWaveform(1, 1);    // Strong click 100%, see datasheet part 11.2
-  // hapticFeedback.go();                 // Play the effect
 
   digitalWrite( 25, !digitalRead(25) );
 }
@@ -171,6 +171,7 @@ void httpPost() {
     } else {
      Serial.print(F("Error: "));
      Serial.println(httpResponseCode);
+      // hapticFeedback.go();                 // Play the effect
     }
 
     http.end(); // Free resources
