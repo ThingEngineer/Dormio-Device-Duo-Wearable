@@ -138,10 +138,22 @@ void httpPost() {
 
     if( httpResponseCode > 0 )
     {
+      display.println(httpResponseCode);
+      display.display();
       // hapticFeedback.go();                 // Play the effect
+    } else {
+      display.clearDisplay();
+      display.setCursor(0,0);
+      display.print(F("HTTP Err: "));
+      display.println(dataBuffer[CHECKSUM_OFFSET]);
+      display.display();
     }
 
     http.end(); // Free resources
   } else {
+     display.clearDisplay();
+     display.setCursor(0,0);
+     display.print(F("No WiFI"));
+     display.display();
   }
 }
