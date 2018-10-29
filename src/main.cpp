@@ -118,32 +118,55 @@ void sampleRateSingle() {
 }
 
 
+void loadFloatBuffer(float _bufferTemp, uint8_t _sampleCounter, uint16_t _arrayOffset) {
+  int16_t characteristic = (int16_t)(_bufferTemp); // Remove the mantissa retaining just a signed integer portion of the value
+  if (characteristic < 0.0) characteristic = (characteristic ^ 0x7FFF) + 1; // If negative remove two's complement signing, leave only the significant bit
+  // Load the characteristic of the floating point to the data buffer
   uint16_t _byteOffset;
   uint8_t _shiftOffset;
-  for ( int i = 0; i < 4; i++ ) // Load sensor data into data buffer array (Little endian unsigned long to unsigned char[4])
+  for ( int i = 0; i < 2; i++ ) // Load sensor data into data buffer array (16 bit Little endian to 8 bit array[2])
   {
-    _byteOffset = ((hrSampleCounter * 4) + i);
+    _byteOffset = ((_sampleCounter * 3) + i); // Offset 3 bytes to account for the matissa as well
     _shiftOffset = (8 * i);
 
-    dataBuffer[IR_OFFSET + _byteOffset] = ( irbufferTemp >> _shiftOffset );
-    checksum = checksum ^ dataBuffer[IR_OFFSET + _byteOffset];
-
-    dataBuffer[RED_OFFSET + _byteOffset] = ( redbufferTemp >> _shiftOffset );
-    checksum = checksum ^ dataBuffer[RED_OFFSET + _byteOffset];
+    dataBuffer[_arrayOffset + _byteOffset] = ( characteristic >> _shiftOffset );
+    checksum = checksum ^ dataBuffer[_arrayOffset + _byteOffset];
   }
 
-  hrSensor.nextSample();
-  hrSampleCounter++;
+  float _mantissa = _bufferTemp - (int32_t)(_bufferTemp); // Remove the characteristic from the mantissa
+  if (_mantissa < 0.0) _mantissa = _mantissa * -1.0; // abs of float
+  uint8_t mantissa = (uint8_t)100 * _mantissa; // Retain 2 decimal places of the mantissa as a whole number
+  _byteOffset = (_sampleCounter * 3); // Offset 3 bytes to account for the characteristic as well
+  dataBuffer[_arrayOffset + _byteOffset + 2] = mantissa; // Load the mantissa of the floating point to the data buffer
+  checksum = checksum ^ dataBuffer[_arrayOffset + 2];
 }
 
 
-void sampleRateModSF() {
+void load32Buffer(uint32_t _bufferTemp, uint8_t _sampleCounter, uint16_t _arrayOffset) {
+  uint16_t _byteOffset;
+  uint8_t _shiftOffset;
+  for ( int i = 0; i < 4; i++ ) // Load sensor data into data buffer array (32 bit Little endian to 8 bit array[4])
+  {
+    _byteOffset = ((_sampleCounter * 4) + i);
+    _shiftOffset = (8 * i);
 
+    dataBuffer[_arrayOffset + _byteOffset] = ( _bufferTemp >> _shiftOffset );
+    checksum = checksum ^ dataBuffer[_arrayOffset + _byteOffset];
+  }
 }
 
 
-void sampleRateSingle() {
+void load16Buffer(uint16_t _bufferTemp, uint8_t _sampleCounter, uint16_t _arrayOffset) {
+  uint16_t _byteOffset;
+  uint8_t _shiftOffset;
+  for ( int i = 0; i < 2; i++ ) // Load sensor data into data buffer array (16 bit Little endian to 8 bit array[2])
+  {
+    _byteOffset = ((_sampleCounter * 2) + i);
+    _shiftOffset = (8 * i);
 
+    dataBuffer[_arrayOffset + _byteOffset] = ( _bufferTemp >> _shiftOffset );
+    checksum = checksum ^ dataBuffer[_arrayOffset + _byteOffset];
+  }
 }
 
 
