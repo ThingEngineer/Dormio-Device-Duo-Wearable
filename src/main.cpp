@@ -23,6 +23,7 @@ void setup() {
 
   if ( hrSensor.begin() == false ) Serial.println(F("MAX30102 Error"));
   hrSensor.setup(ledBrightness, sampleAverage, ledMode, sampleRate, pulseWidth, adcRange);
+  hrSensor.readTemperature(); // Initial temperture reading
   /*END******************************MAX30102*********************************/
 
   /***********************************ESP8266*********************************/
