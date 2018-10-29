@@ -46,7 +46,7 @@ movingAvgFloat gyroZAvg(4);
 * Function prototypes
 ****************************************************************************/
 void sampleRateFull();
-void sampleRateModSF();
+void sampleRateModHalfSF();
 void sampleRateSingle();
 void httpPost();
 

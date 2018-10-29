@@ -62,17 +62,15 @@ void setup() {
 
 
 void loop() {
-  if ( fullSampleCounter % HALF_SF == 0) sampleRateModHalfSF(); // SAMPLE_COUNT / HALF_SF (2 per second)
 
   if ( fullSampleCounter % HALF_SF == 0) sampleRateModHalfSF(); // SAMPLE_COUNT / HALF_SF (2 per second)
 
   sampleRateFull(); // Full sample rate
 
-  if ( hrSampleCounter % SF == 0) sampleRateModSF(); // Sample rate / SF
-
   if ( hrSampleCounter == SAMPLE_COUNT ) {
     sampleRateSingle(); // Minimum sample rate
     httpPost(); // Sample cycle complete, send data
+    modSFSampleCounter = 0;
   }
 }
 
