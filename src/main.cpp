@@ -48,12 +48,6 @@ void setup() {
   display.display();
   /*END********************************OLED***********************************/
 
-  accelXAvg.begin();
-  accelYAvg.begin();
-  accelZAvg.begin();
-  gyroXAvg.begin();
-  gyroYAvg.begin();
-  gyroZAvg.begin();
 
   pinMode(GSRpin, INPUT);
 
