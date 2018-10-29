@@ -65,27 +65,28 @@ const uint8_t GSRpin = A0;             // GSR analog input pin
 #define HALF_SF (SF / 2)               // Sampling frequency / 2
 #define SAMPLE_COUNT (ST * SF)         // MAX30102 sample count per cycle
 
-// Data array member sizes
+// Data array member sizes in totly bytes per cycle
 #define IR_RED_SIZE (SAMPLE_COUNT * 4) // MAX30102 ir/red buffer - sample count * 4(bytes per sample)
-#define DIE_TEMP_SIZE 4                // MAX30102 die temperture
-#define OBJECT_TEMP_SIZE 4             // MLX90614 object temperture
-#define AMBIENT_TEMP_SIZE 4            // MLX90614 ambient temperture
-#define GSR_SIZE 10                    // LM324 GSR readings
-#define ACCEL_X_SIZE 20                // LSM6DS3 accelerometer x readings
-#define ACCEL_Y_SIZE 20                // LSM6DS3 accelerometer y readings
-#define ACCEL_Z_SIZE 20                // LSM6DS3 accelerometer z readings
-#define GYRO_X_SIZE 20                 // LSM6DS3 gyroscope x readings
-#define GYRO_Y_SIZE 20                 // LSM6DS3 gyroscope y readings
-#define GYRO_Z_SIZE 20                 // LSM6DS3 gyroscope z readings
+#define DIE_TEMP_SIZE 3                // MAX30102 die temperture
+#define OBJECT_TEMP_SIZE 3             // MLX90614 object temperture
+#define AMBIENT_TEMP_SIZE 3            // MLX90614 ambient temperture
+#define GSR_SIZE 20                    // LM324 GSR readings
+#define ACCEL_X_SIZE 30                // LSM6DS3 accelerometer x readings
+#define ACCEL_Y_SIZE 30                // LSM6DS3 accelerometer y readings
+#define ACCEL_Z_SIZE 30                // LSM6DS3 accelerometer z readings
+#define GYRO_X_SIZE 30                 // LSM6DS3 gyroscope x readings
+#define GYRO_Y_SIZE 30                 // LSM6DS3 gyroscope y readings
+#define GYRO_Z_SIZE 30                 // LSM6DS3 gyroscope z readings
 #define EPOCH_SIZE 4                   // Epoch seconds
+#define FRAME_COUNT_SIZE 2             // Frames captured
 #define CHECKSUM_SIZE 1                // Checksum
 
 // Data array offsets
 #define IR_OFFSET 0                                                  // IR LED sensor
 #define RED_OFFSET IR_RED_SIZE                                       // RED LED sensor
 #define DIE_TEMP_OFFSET (RED_OFFSET + IR_RED_SIZE)                   // MAX30102 die temperture
-#define OBJECT_TEMP_OFFSET (DIE_TEMP_OFFSET + DIE_TEMP_SIZE)         // MLX90614 object temperture
-#define AMBIENT_TEMP_OFFSET (OBJECT_TEMP_OFFSET + OBJECT_TEMP_SIZE)  // MLX90614 ambient temperture
+#define SKIN_TEMP_OFFSET (DIE_TEMP_OFFSET + DIE_TEMP_SIZE)           // MLX90614 object (skin) temperture
+#define AMBIENT_TEMP_OFFSET (SKIN_TEMP_OFFSET + OBJECT_TEMP_SIZE)    // MLX90614 ambient temperture
 #define GSR_OFFSET (AMBIENT_TEMP_OFFSET + AMBIENT_TEMP_SIZE)         // LM324 GSR readings
 #define ACCEL_X_OFFSET (GSR_OFFSET + GSR_SIZE)                       // LSM6DS3 accelerometer x readings
 #define ACCEL_Y_OFFSET (ACCEL_X_OFFSET + ACCEL_X_SIZE)               // LSM6DS3 accelerometer y readings
@@ -93,14 +94,17 @@ const uint8_t GSRpin = A0;             // GSR analog input pin
 #define GYRO_X_OFFSET (ACCEL_Z_OFFSET + ACCEL_Z_SIZE)                // LSM6DS3 gyroscope x readings
 #define GYRO_Y_OFFSET (GYRO_X_OFFSET + GYRO_X_SIZE)                  // LSM6DS3 gyroscope y readings
 #define GYRO_Z_OFFSET (GYRO_Y_OFFSET + GYRO_Y_SIZE)                  // LSM6DS3 gyroscope z readings
-#define EPOCH_OFFSET (GYRO_Z_OFFSET + GYRO_Z_SIZE)                   // Epoch seconds
-#define CHECKSUM_OFFSET (EPOCH_OFFSET + EPOCH_SIZE)                  // Checksum
+#define EPOCH_OFFSET (GYRO_Z_OFFSET + GYRO_Z_SIZE)                   // Epoch seconds (time since boot)
+#define FRAME_COUNT_OFFSET (EPOCH_OFFSET + EPOCH_SIZE)               // Frames captured
+#define CHECKSUM_OFFSET (FRAME_COUNT_OFFSET + FRAME_COUNT_SIZE)      // Checksum
 
-#define BUFFER_SIZE (CHECKSUM_OFFSET)     // Total data buffer size
-uint8_t dataBuffer[BUFFER_SIZE];          // Post data buffer - holds all sensor data to send
-uint8_t checksum;                         // Data array XOR checksum
+#define BUFFER_SIZE (CHECKSUM_OFFSET + 1) // Total data buffer size
+uint8_t dataBuffer[BUFFER_SIZE];       // Post data buffer - holds all sensor data to send
+uint8_t checksum;                      // Data array XOR checksum
 
-uint8_t hrSampleCounter = 0;              // MAX30102 sample loop counter
+uint8_t fullSampleCounter = 0;         // Full sample loop counter
+uint8_t modSFSampleCounter = 0;        // Mod SF sample loop counter (SAMPLE_COUNT / SF)
+uint16_t frameCounter = 0;             // Counts the number of sample frames captured
 
 
 #endif /* MAIN_H */
