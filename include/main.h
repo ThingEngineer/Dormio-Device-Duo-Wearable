@@ -54,6 +54,7 @@ void httpPost();
 /****************************************************************************
 * Port aliases
 ****************************************************************************/
+const uint8_t GSRpin = A0;             // GSR analog input pin
 
 
 /****************************************************************************
@@ -100,8 +101,6 @@ uint8_t dataBuffer[BUFFER_SIZE];          // Post data buffer - holds all sensor
 uint8_t checksum;                         // Data array XOR checksum
 
 uint8_t hrSampleCounter = 0;              // MAX30102 sample loop counter
-
-const uint8_t GSRpin = A0;                // GSR analog input pin
 
 
 #endif /* MAIN_H */
