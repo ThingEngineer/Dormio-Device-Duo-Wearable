@@ -34,12 +34,6 @@ LSM6DS3 IMU;
 // Adafruit_DRV2605 hapticFeedback;
 #define OLED_RESET 16
 Adafruit_SSD1306 display(OLED_RESET);
-movingAvgFloat accelXAvg(4);
-movingAvgFloat accelYAvg(4);
-movingAvgFloat accelZAvg(4);
-movingAvgFloat gyroXAvg(4);
-movingAvgFloat gyroYAvg(4);
-movingAvgFloat gyroZAvg(4);
 
 
 /****************************************************************************
