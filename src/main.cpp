@@ -62,23 +62,27 @@ void setup() {
 
 
 void loop() {
+  sampleRateFull(); // Full sample rate (50 per second)
 
   if ( fullSampleCounter % HALF_SF == 0) sampleRateModHalfSF(); // SAMPLE_COUNT / HALF_SF (2 per second)
 
-  sampleRateFull(); // Full sample rate
-
-  if ( hrSampleCounter == SAMPLE_COUNT ) {
+  if ( fullSampleCounter == SAMPLE_COUNT ) {
     sampleRateSingle(); // Minimum sample rate
     httpPost(); // Sample cycle complete, send data
+    fullSampleCounter = 0; // Cycle complete, reset counters
     modSFSampleCounter = 0;
   }
 }
 
 
 void sampleRateFull() {
-  uint32_t irbufferTemp, redbufferTemp; // Get new ir and red sensor readings
-  irbufferTemp = hrSensor.getIR();
-  redbufferTemp = hrSensor.getRed();
+  load32Buffer(hrSensor.getIR(), fullSampleCounter, IR_OFFSET);
+  load32Buffer(hrSensor.getRed(), fullSampleCounter, RED_OFFSET);
+
+  hrSensor.nextSample();
+  fullSampleCounter++;
+}
+
 
 void sampleRateModHalfSF() {
   // Get and load IMU redings to data buffer
@@ -92,6 +96,25 @@ void sampleRateModHalfSF() {
   load16Buffer(analogRead(GSRpin), modSFSampleCounter, GSR_OFFSET); // Get and load GSR reding to data buffer
 
   modSFSampleCounter++;
+}
+
+
+void sampleRateSingle() {
+  loadFloatBuffer(hrSensor.readTemperature(), 0, DIE_TEMP_OFFSET); // Load current MAX30102 die temperture to data buffer
+  loadFloatBuffer(tempSensor.readObjectTempC(), 0, SKIN_TEMP_OFFSET); // Load current skin temperture to data buffer
+  loadFloatBuffer(tempSensor.readAmbientTempC(), 0, AMBIENT_TEMP_OFFSET); // Load current ambient temperture to data buffer
+  load32Buffer((millis() / 1000), 0, EPOCH_OFFSET); // Load current epoch to data buffer
+  load32Buffer(frameCounter, 0, FRAME_COUNT_OFFSET); // Load current frame count to data buffer
+  dataBuffer[CHECKSUM_OFFSET] = checksum; // Load checksum to data buffer
+
+  display.clearDisplay();
+  display.setCursor(0,0);
+  // display.println((millis() / 1000));
+  display.println(frameCounter);
+  // display.println(dataBuffer[CHECKSUM_OFFSET]);
+  display.display();
+
+  frameCounter++;
 }
 
 
