@@ -97,6 +97,7 @@ const uint8_t GSRpin = A0;             // GSR analog input pin
 
 #define BUFFER_SIZE (CHECKSUM_OFFSET + 1) // Total data buffer size
 uint8_t dataBuffer[BUFFER_SIZE];       // Post data buffer - holds all sensor data to send
+uint8_t mac[6];                        // MAC address of the ESP8266
 uint8_t checksum;                      // Data array XOR checksum
 
 uint8_t fullSampleCounter = 0;         // Full sample loop counter

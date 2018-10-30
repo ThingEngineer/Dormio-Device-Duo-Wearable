@@ -42,6 +42,7 @@ void setup() {
   display.setCursor(0,0);
   display.println(F("Connecting to WiFi"));
   display.display();
+  WiFi.macAddress(mac); // Read MAC address into mac array
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED) {
@@ -52,8 +53,20 @@ void setup() {
   display.clearDisplay();
   display.setCursor(0,0);
   display.println(F("Connected OK"));
-  display.println(F("IP Address:"));
+  display.print(F("IP "));
   display.println(WiFi.localIP());
+  display.print("MAC ");
+  display.print(mac[5],HEX);
+  display.print(":");
+  display.print(mac[4],HEX);
+  display.print(":");
+  display.print(mac[3],HEX);
+  display.print(":");
+  display.print(mac[2],HEX);
+  display.print(":");
+  display.print(mac[1],HEX);
+  display.print(":");
+  display.println(mac[0],HEX);
   display.display();
   /*END*******************************ESP8266*********************************/
 
