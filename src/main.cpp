@@ -30,17 +30,13 @@ void setup() {
   display.clearDisplay();
   display.setTextSize(1);
   display.setTextColor(WHITE);
-  display.setCursor(0,9);
-  display.println(F("  Dormio Device Duo"));
-  display.println(F("  --==Deep Dream==--"));
-  display.display();
-  delay(1000);
   /*END********************************OLED***********************************/
 
   /***********************************ESP8266*********************************/
-  display.clearDisplay();
   display.setCursor(0,0);
-  display.println(F("Connecting to WiFi"));
+  display.println(F(" Dormio Device Duo"));
+  display.println(F(" --==Deep Dream==--"));
+  display.println(F(" Connecting to WiFi"));
   display.display();
   WiFi.macAddress(mac); // Read MAC address into mac array
   WiFi.mode(WIFI_STA);
