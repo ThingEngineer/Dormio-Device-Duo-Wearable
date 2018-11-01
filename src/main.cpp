@@ -187,8 +187,8 @@ void load16Buffer(uint16_t _bufferTemp, uint8_t _sampleCounter, uint16_t _arrayO
 void loadMACBuffer(uint16_t _arrayOffset) {
   for ( uint8_t i = 0; i < 6; i++ ) // Load mac address array into data buffer array
   {
-    dataBuffer[_arrayOffset + i] = mac[(5 - i)];
-    checksum = checksum ^ mac[i];
+    dataBuffer[_arrayOffset + i] = mac[(5 - i)]; // Reverse byte order to allow sequential retreval on the server
+    checksum = checksum ^ mac[i]; // Add MAC address to the checksum
   }
 }
 
