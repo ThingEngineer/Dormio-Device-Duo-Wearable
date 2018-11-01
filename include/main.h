@@ -87,9 +87,9 @@ void calcChecksum(uint8_t newValue);
 #define CHECKSUM_SIZE 1                // Checksum
 
 // Data array offsets
-#define IR_OFFSET 0                                                  // IR LED sensor
-#define RED_OFFSET IR_RED_SIZE                                       // RED LED sensor
 #define DIE_TEMP_OFFSET (RED_OFFSET + IR_RED_SIZE)                   // MAX30102 die temperture
+#define IR_OFFSET 0                                                  // PPG IR LED readings
+#define RED_OFFSET IR_RED_SIZE                                       // PPG RED LED readings
 #define SKIN_TEMP_OFFSET (DIE_TEMP_OFFSET + DIE_TEMP_SIZE)           // MLX90614 object (skin) temperture
 #define AMBIENT_TEMP_OFFSET (SKIN_TEMP_OFFSET + OBJECT_TEMP_SIZE)    // MLX90614 ambient temperture
 #define GSR_OFFSET (AMBIENT_TEMP_OFFSET + AMBIENT_TEMP_SIZE)         // LM324 GSR readings
