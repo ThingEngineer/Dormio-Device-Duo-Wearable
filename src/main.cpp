@@ -55,17 +55,17 @@ void setup() {
   display.println(F("Connected OK"));
   display.print(F("IP "));
   display.println(WiFi.localIP());
-  display.print("MAC ");
+  display.print(F("MAC "));
   display.print(mac[5],HEX);
-  display.print(":");
+  display.print(F(":"));
   display.print(mac[4],HEX);
-  display.print(":");
+  display.print(F(":"));
   display.print(mac[3],HEX);
-  display.print(":");
+  display.print(F(":"));
   display.print(mac[2],HEX);
-  display.print(":");
+  display.print(F(":"));
   display.print(mac[1],HEX);
-  display.print(":");
+  display.print(F(":"));
   display.println(mac[0],HEX);
   display.display();
   /*END*******************************ESP8266*********************************/
