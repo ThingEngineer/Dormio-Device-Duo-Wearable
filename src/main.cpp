@@ -107,8 +107,8 @@ void sampleRateModHalfSF() {
   loadFloatBuffer(imu.readFloatGyroX(), modSFSampleCounter, GYRO_X_OFFSET);
   loadFloatBuffer(imu.readFloatGyroY(), modSFSampleCounter, GYRO_Y_OFFSET);
   loadFloatBuffer(imu.readFloatGyroZ(), modSFSampleCounter, GYRO_Z_OFFSET);
-
-  load16Buffer(ads.readADC_SingleEnded(GSRpin), modSFSampleCounter, GSR_OFFSET); // Read and load GSR to data buffer
+  // Load GSR reading to data buffer
+  load16Buffer(ads.readADC_SingleEnded(GSRpin), modSFSampleCounter, GSR_OFFSET);
 
   modSFSampleCounter++;
 }
