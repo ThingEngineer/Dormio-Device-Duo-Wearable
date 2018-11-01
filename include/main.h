@@ -12,7 +12,6 @@
 /****************************************************************************
 * Includes
 ****************************************************************************/
-#include "env.h"                       // Sensitive environment parameters
 #include <Arduino.h>                   // Main include file for the Arduino SDK
 #include <Wire.h>                      // Arduino I2C library
 #include <ESP8266WiFi.h>               // ESP8266 core for Arduino
@@ -23,6 +22,8 @@
 // #include <Adafruit_DRV2605.h>          // DRV2605L Haptic Controller https://github.com/adafruit/Adafruit_DRV2605_Library
 #include <Adafruit_SSD1306.h>          // SSD1306 OLED driver library for 'monochrome' 128x64 and 128x32 OLEDs - https://github.com/adafruit/Adafruit_SSD1306
 #include <Adafruit_GFX.h>              // Adafruit GFX Library
+
+#include "env.h"                       // Secret values
 
 
 /****************************************************************************
