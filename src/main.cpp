@@ -114,6 +114,7 @@ void sampleRateSingle() {
   loadFloatBuffer(tempSensor.readAmbientTempC(), 0, AMBIENT_TEMP_OFFSET); // Load current ambient temperture to data buffer
   load32Buffer((millis() / 1000), 0, EPOCH_OFFSET); // Load current epoch to data buffer
   load32Buffer(frameCounter, 0, FRAME_COUNT_OFFSET); // Load current frame count to data buffer
+  loadMACBuffer(MAC_OFFSET); // Load MAC address into data buffer
   dataBuffer[CHECKSUM_OFFSET] = checksum; // Load checksum to data buffer
 
   display.clearDisplay();
@@ -175,6 +176,15 @@ void load16Buffer(uint16_t _bufferTemp, uint8_t _sampleCounter, uint16_t _arrayO
 
     dataBuffer[_arrayOffset + _byteOffset] = ( _bufferTemp >> _shiftOffset );
     checksum = checksum ^ dataBuffer[_arrayOffset + _byteOffset];
+  }
+}
+
+
+void loadMACBuffer(uint16_t _arrayOffset) {
+  for ( uint8_t i = 0; i < 6; i++ ) // Load mac address array into data buffer array
+  {
+    dataBuffer[_arrayOffset + i] = mac[(5 - i)];
+    checksum = checksum ^ mac[i];
   }
 }
 

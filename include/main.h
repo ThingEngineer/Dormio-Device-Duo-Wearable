@@ -47,6 +47,7 @@ void httpPost();
 void loadFloatBuffer(float _bufferTemp, uint8_t _sampleCounter, uint16_t _arrayOffset);
 void load32Buffer(uint32_t _bufferTemp, uint8_t _sampleCounter, uint16_t _arrayOffset);
 void load16Buffer(uint16_t _bufferTemp, uint8_t _sampleCounter, uint16_t _arrayOffset);
+void loadMACBuffer(uint16_t _arrayOffset);
 
 
 /****************************************************************************
@@ -77,6 +78,7 @@ const uint8_t GSRpin = A0;             // GSR analog input pin
 #define GYRO_Z_SIZE 30                 // LSM6DS3 gyroscope z readings
 #define EPOCH_SIZE 4                   // Epoch seconds
 #define FRAME_COUNT_SIZE 2             // Frames captured
+#define MAC_SIZE 6                     // MAC address
 #define CHECKSUM_SIZE 1                // Checksum
 
 // Data array offsets
@@ -94,7 +96,8 @@ const uint8_t GSRpin = A0;             // GSR analog input pin
 #define GYRO_Z_OFFSET (GYRO_Y_OFFSET + GYRO_Y_SIZE)                  // LSM6DS3 gyroscope z readings
 #define EPOCH_OFFSET (GYRO_Z_OFFSET + GYRO_Z_SIZE)                   // Epoch seconds (time since boot)
 #define FRAME_COUNT_OFFSET (EPOCH_OFFSET + EPOCH_SIZE)               // Frames captured
-#define CHECKSUM_OFFSET (FRAME_COUNT_OFFSET + FRAME_COUNT_SIZE)      // Checksum
+#define MAC_OFFSET (FRAME_COUNT_OFFSET + FRAME_COUNT_SIZE)           // MAC address
+#define CHECKSUM_OFFSET (MAC_OFFSET + MAC_SIZE)                      // Checksum
 
 #define BUFFER_SIZE (CHECKSUM_OFFSET + 1) // Total data buffer size
 uint8_t dataBuffer[BUFFER_SIZE];       // Post data buffer - holds all sensor data to send
