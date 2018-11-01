@@ -91,8 +91,11 @@ void loop() {
 
 
 void sampleRateFull() {
+  // Load IMU redings to data buffer
   load32Buffer(hrSensor.getIR(), fullSampleCounter, IR_OFFSET);
   load32Buffer(hrSensor.getRed(), fullSampleCounter, RED_OFFSET);
+  // Load ECG reading to data buffer
+  load16Buffer(ads.readADC_SingleEnded(ECGpin), fullSampleCounter, ECG_OFFSET);
 
   hrSensor.nextSample();
   fullSampleCounter++;
@@ -100,7 +103,7 @@ void sampleRateFull() {
 
 
 void sampleRateModHalfSF() {
-  // Get and load IMU redings to data buffer
+  // Load IMU redings to data buffer
   loadFloatBuffer(imu.readFloatAccelX(), modSFSampleCounter, ACCEL_X_OFFSET);
   loadFloatBuffer(imu.readFloatAccelY(), modSFSampleCounter, ACCEL_Y_OFFSET);
   loadFloatBuffer(imu.readFloatAccelZ(), modSFSampleCounter, ACCEL_Z_OFFSET);

@@ -59,6 +59,7 @@ void calcChecksum(uint8_t newValue);
 * Port aliases
 ****************************************************************************/
 #define GSRpin 0                       // Galvanic skin response ADS1115 analog input A0
+#define ECGpin 1                       // ECG/EKG/EMG Electrocardiography/Electromyography ADS1115 analog input A1
 
 /****************************************************************************
 * Variable and constant declarations
@@ -70,6 +71,7 @@ void calcChecksum(uint8_t newValue);
 
 // Data array member sizes in totly bytes per cycle
 #define IR_RED_SIZE (SAMPLE_COUNT * 4) // MAX30102 ir/red buffer - sample count * 4(bytes per sample)
+#define ECG_SIZE (SAMPLE_COUNT * 2)    // ECG ADC1115 adc sample - sample count * 2(bytes per sample)
 #define DIE_TEMP_SIZE 3                // MAX30102 die temperture
 #define OBJECT_TEMP_SIZE 3             // MLX90614 object temperture
 #define AMBIENT_TEMP_SIZE 3            // MLX90614 ambient temperture
@@ -87,9 +89,10 @@ void calcChecksum(uint8_t newValue);
 #define CHECKSUM_SIZE 1                // Checksum
 
 // Data array offsets
-#define DIE_TEMP_OFFSET (RED_OFFSET + IR_RED_SIZE)                   // MAX30102 die temperture
 #define IR_OFFSET 0                                                  // PPG IR LED readings
 #define RED_OFFSET IR_RED_SIZE                                       // PPG RED LED readings
+#define ECG_OFFSET (RED_OFFSET + IR_RED_SIZE)                        // ECG readings
+#define DIE_TEMP_OFFSET (ECG_OFFSET + ECG_SIZE)                      // MAX30102 die temperture
 #define SKIN_TEMP_OFFSET (DIE_TEMP_OFFSET + DIE_TEMP_SIZE)           // MLX90614 object (skin) temperture
 #define AMBIENT_TEMP_OFFSET (SKIN_TEMP_OFFSET + OBJECT_TEMP_SIZE)    // MLX90614 ambient temperture
 #define GSR_OFFSET (AMBIENT_TEMP_OFFSET + AMBIENT_TEMP_SIZE)         // LM324 GSR readings
