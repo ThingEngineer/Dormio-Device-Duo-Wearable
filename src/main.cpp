@@ -4,13 +4,17 @@
 void setup() {
   Serial.begin(115200);                // Initialize serial data transmission and set baud rate
 
-  Wire.begin(4,5);
+  Wire.begin(4,5);                     // Initial I2C and join bus as master
+
+  I2CSelect(6);                        // Select I2C bus channel 6
+  hapticFeedback.begin();              // Initialize DRV2605 haptic feedback driver
+  hapticFeedback.setMode(DRV2605_MODE_INTTRIG);
+  hapticFeedback.selectLibrary(1);     // Set haptic feedback library
+  hapticFeedback.setWaveform(1, 1);    // Strong click 100%, see datasheet part 11.2
+
+  I2CSelect(7);                        // Select I2C bus channel 7
   tempSensor.begin();                  // Initilize MLX90614 temperature sensor
   IMU.begin();                         // Initialize LSM6DS3 6DOF IMU
-  // hapticFeedback.begin();              // Initialize DRV2605 haptic feedback driver
-  // hapticFeedback.setMode(DRV2605_MODE_INTTRIG);
-  // hapticFeedback.selectLibrary(1);     // Set haptic feedback library
-  // hapticFeedback.setWaveform(1, 1);    // Strong click 100%, see datasheet part 11.2
 
   /**********************************MAX30102*********************************/
   uint8_t ledBrightness = 32; // Options: 0=Off to 255=50mA
@@ -206,7 +210,9 @@ void httpPost() {
     {
       display.println(httpResponseCode);
       display.display();
-      // hapticFeedback.go();                 // Play the effect
+      I2CSelect(6);                        // Select I2C bus channel 6
+      hapticFeedback.go();                 // Play the effect
+      I2CSelect(7);                        // Select I2C bus channel 7
     } else {
       display.clearDisplay();
       display.setCursor(0,0);
@@ -231,4 +237,13 @@ void encryptBuffer() {
       dataBuffer[data] = dataBuffer[data] ^ encryptionKey[key]; // XOR the current byte with the encryption key
     }
   }
+}
+
+
+void I2CSelect(uint8_t channel) {
+  if (channel > 7) return;
+
+  Wire.beginTransmission(0x70);
+  Wire.write(1 << channel);
+  Wire.endTransmission();
 }

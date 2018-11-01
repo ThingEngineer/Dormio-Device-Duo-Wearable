@@ -19,7 +19,7 @@
 #include <MAX30105.h>                  // SparkFun MAX3010x Pulse and Proximity Sensor Library - https://github.com/sparkfun/SparkFun_MAX3010x_Sensor_Library
 #include <Adafruit_MLX90614.h>         // MLX90614 temperature sensor library - https://github.com/adafruit/Adafruit-MLX90614-Library
 #include <SparkFunLSM6DS3.h>           // LSM6DS3 accelerometer and gyroscope 6DoF IMU Library
-// #include <Adafruit_DRV2605.h>          // DRV2605L Haptic Controller https://github.com/adafruit/Adafruit_DRV2605_Library
+#include <Adafruit_DRV2605.h>          // DRV2605L Haptic Controller https://github.com/adafruit/Adafruit_DRV2605_Library
 #include <Adafruit_SSD1306.h>          // SSD1306 OLED driver library for 'monochrome' 128x64 and 128x32 OLEDs - https://github.com/adafruit/Adafruit_SSD1306
 #include <Adafruit_GFX.h>              // Adafruit GFX Library
 
@@ -32,7 +32,7 @@
 MAX30105 hrSensor;
 Adafruit_MLX90614 tempSensor = Adafruit_MLX90614();
 LSM6DS3 IMU;
-// Adafruit_DRV2605 hapticFeedback;
+Adafruit_DRV2605 hapticFeedback;
 #define OLED_RESET 16
 Adafruit_SSD1306 display(OLED_RESET);
 
@@ -49,6 +49,7 @@ void loadFloatBuffer(float _bufferTemp, uint8_t _sampleCounter, uint16_t _arrayO
 void load32Buffer(uint32_t _bufferTemp, uint8_t _sampleCounter, uint16_t _arrayOffset);
 void load16Buffer(uint16_t _bufferTemp, uint8_t _sampleCounter, uint16_t _arrayOffset);
 void loadMACBuffer(uint16_t _arrayOffset);
+void I2CSelect(uint8_t channel);
 
 
 /****************************************************************************
