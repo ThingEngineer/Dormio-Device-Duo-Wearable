@@ -44,6 +44,7 @@ void sampleRateFull();
 void sampleRateModHalfSF();
 void sampleRateSingle();
 void httpPost();
+void encryptBuffer();
 void loadFloatBuffer(float _bufferTemp, uint8_t _sampleCounter, uint16_t _arrayOffset);
 void load32Buffer(uint32_t _bufferTemp, uint8_t _sampleCounter, uint16_t _arrayOffset);
 void load16Buffer(uint16_t _bufferTemp, uint8_t _sampleCounter, uint16_t _arrayOffset);

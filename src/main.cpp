@@ -194,6 +194,8 @@ void httpPost() {
   {
     HTTPClient http;
 
+    encryptBuffer(); // Encrypt the data buffer before sending
+
     http.begin(post_url); // Specify destination for HTTP request
     http.addHeader(F("Content-Type"), F("application/json")); // Specify content-type
     http.addHeader(F("Content-Length"), String(BUFFER_SIZE)); // Specify content length
@@ -219,5 +221,14 @@ void httpPost() {
      display.setCursor(0,0);
      display.print(F("No WiFI"));
      display.display();
+  }
+}
+
+
+void encryptBuffer() {
+  for(uint8_t key = 0; key < sizeof(encryptionKey); key++) { // Loop through each encryption key
+    for(uint16_t data = 0; data < BUFFER_SIZE; data++) { // Loop through each byte in the data buffer
+      dataBuffer[data] = dataBuffer[data] ^ encryptionKey[key]; // XOR the current byte with the encryption key
+    }
   }
 }
