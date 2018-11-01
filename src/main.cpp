@@ -15,6 +15,8 @@ void setup() {
   I2CSelect(7);                        // Select I2C bus channel 7
   tempSensor.begin();                  // Initilize MLX90614 temperature sensor
   imu.begin();                         // Initialize LSM6DS3 6DOF IMU
+  ads.begin();                         // Initialize ADS1115 ADC
+  ads.setGain(GAIN_ONE);               // Default ADS1115 amplifier gain
 
   /**********************************MAX30102*********************************/
   uint8_t ledBrightness = 32; // Options: 0=Off to 255=50mA
@@ -106,7 +108,7 @@ void sampleRateModHalfSF() {
   loadFloatBuffer(imu.readFloatGyroY(), modSFSampleCounter, GYRO_Y_OFFSET);
   loadFloatBuffer(imu.readFloatGyroZ(), modSFSampleCounter, GYRO_Z_OFFSET);
 
-  //load16Buffer(analogRead(GSRpin), modSFSampleCounter, GSR_OFFSET); // Get and load GSR reding to data buffer
+  load16Buffer(ads.readADC_SingleEnded(GSRpin), modSFSampleCounter, GSR_OFFSET); // Read and load GSR to data buffer
 
   modSFSampleCounter++;
 }

@@ -22,6 +22,7 @@
 #include <Adafruit_DRV2605.h>          // DRV2605L Haptic Controller https://github.com/adafruit/Adafruit_DRV2605_Library
 #include <Adafruit_SSD1306.h>          // SSD1306 OLED driver library for 'monochrome' 128x64 and 128x32 OLEDs - https://github.com/adafruit/Adafruit_SSD1306
 #include <Adafruit_GFX.h>              // Adafruit GFX Library
+#include <Adafruit_ADS1015.h>          // ADS1115 high-resolution analog to digital converter with programmable gain amplifier
 
 #include "env.h"                       // Secret values
 
@@ -35,6 +36,7 @@ LSM6DS3 imu;
 Adafruit_DRV2605 hapticFeedback;
 #define OLED_RESET 16
 Adafruit_SSD1306 display(OLED_RESET);
+Adafruit_ADS1115 ads;
 
 
 /****************************************************************************
@@ -56,8 +58,7 @@ void calcChecksum(uint8_t newValue);
 /****************************************************************************
 * Port aliases
 ****************************************************************************/
-// const uint8_t GSRpin = A0;             // GSR analog input pin
-
+#define GSRpin 0                       // Galvanic skin response ADS1115 analog input A0
 
 /****************************************************************************
 * Variable and constant declarations
