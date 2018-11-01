@@ -56,7 +56,7 @@ void calcChecksum(uint8_t newValue);
 /****************************************************************************
 * Port aliases
 ****************************************************************************/
-const uint8_t GSRpin = A0;             // GSR analog input pin
+// const uint8_t GSRpin = A0;             // GSR analog input pin
 
 
 /****************************************************************************
@@ -82,6 +82,7 @@ const uint8_t GSRpin = A0;             // GSR analog input pin
 #define EPOCH_SIZE 4                   // Epoch seconds
 #define FRAME_COUNT_SIZE 2             // Frames captured
 #define MAC_SIZE 6                     // MAC address
+#define VCC_SIZE 2                     // VCC adc reading
 #define CHECKSUM_SIZE 1                // Checksum
 
 // Data array offsets
@@ -100,7 +101,8 @@ const uint8_t GSRpin = A0;             // GSR analog input pin
 #define EPOCH_OFFSET (GYRO_Z_OFFSET + GYRO_Z_SIZE)                   // Epoch seconds (time since boot)
 #define FRAME_COUNT_OFFSET (EPOCH_OFFSET + EPOCH_SIZE)               // Frames captured
 #define MAC_OFFSET (FRAME_COUNT_OFFSET + FRAME_COUNT_SIZE)           // MAC address
-#define CHECKSUM_OFFSET (MAC_OFFSET + MAC_SIZE)                      // Checksum
+#define VCC_OFFSET (MAC_OFFSET + MAC_SIZE)                           // VCC adc reading
+#define CHECKSUM_OFFSET (VCC_OFFSET + VCC_SIZE)                      // Checksum
 
 #define BUFFER_SIZE (CHECKSUM_OFFSET + 1) // Total data buffer size
 uint8_t dataBuffer[BUFFER_SIZE];       // Post data buffer - holds all sensor data to send
@@ -110,5 +112,6 @@ uint8_t fullSampleCounter = 0;         // Full sample loop counter
 uint8_t modSFSampleCounter = 0;        // Mod SF sample loop counter (SAMPLE_COUNT / SF)
 uint16_t frameCounter = 0;             // Counts the number of sample frames captured
 
+ADC_MODE(ADC_VCC);
 
 #endif /* MAIN_H */

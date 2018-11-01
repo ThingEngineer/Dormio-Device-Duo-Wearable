@@ -69,8 +69,6 @@ void setup() {
   display.println(mac[0],HEX);
   display.display();
   /*END*******************************ESP8266*********************************/
-
-  pinMode(GSRpin, INPUT);
 }
 
 
@@ -108,7 +106,7 @@ void sampleRateModHalfSF() {
   loadFloatBuffer(IMU.readFloatGyroY(), modSFSampleCounter, GYRO_Y_OFFSET);
   loadFloatBuffer(IMU.readFloatGyroZ(), modSFSampleCounter, GYRO_Z_OFFSET);
 
-  load16Buffer(analogRead(GSRpin), modSFSampleCounter, GSR_OFFSET); // Get and load GSR reding to data buffer
+  //load16Buffer(analogRead(GSRpin), modSFSampleCounter, GSR_OFFSET); // Get and load GSR reding to data buffer
 
   modSFSampleCounter++;
 }
@@ -121,6 +119,7 @@ void sampleRateSingle() {
   load32Buffer((millis() / 1000), 0, EPOCH_OFFSET); // Load current epoch to data buffer
   load32Buffer(frameCounter, 0, FRAME_COUNT_OFFSET); // Load current frame count to data buffer
   loadMACBuffer(MAC_OFFSET); // Load MAC address into data buffer
+  load16Buffer(ESP.getVcc(), 0, VCC_OFFSET);
   dataBuffer[CHECKSUM_OFFSET] = checksum; // Load checksum to data buffer
 
   display.clearDisplay();
