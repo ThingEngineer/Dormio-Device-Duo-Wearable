@@ -84,6 +84,7 @@ void loop() {
     httpPost(); // Sample cycle complete, send data
     fullSampleCounter = 0; // Cycle complete, reset counters
     modSFSampleCounter = 0;
+    checksum = 0; // Reset checksum
   }
 }
 
@@ -125,7 +126,7 @@ void sampleRateSingle() {
   display.setCursor(0,0);
   // display.println((millis() / 1000));
   display.println(frameCounter);
-  // display.println(dataBuffer[CHECKSUM_OFFSET]);
+  display.println(dataBuffer[CHECKSUM_OFFSET]);
   display.display();
 
   frameCounter++;
