@@ -81,6 +81,7 @@ void loop() {
 
   if ( fullSampleCounter == SAMPLE_COUNT ) {
     sampleRateSingle(); // Minimum sample rate
+    encryptBuffer(); // Encrypt the data buffer before sending
     httpPost(); // Sample cycle complete, send data
     fullSampleCounter = 0; // Cycle complete, reset counters
     modSFSampleCounter = 0;
@@ -203,8 +204,6 @@ void httpPost() {
   if( WiFi.status() == WL_CONNECTED ) // Check WiFi connection status
   {
     HTTPClient http;
-
-    encryptBuffer(); // Encrypt the data buffer before sending
 
     http.begin(post_url); // Specify destination for HTTP request
     http.addHeader(F("Content-Type"), F("application/json")); // Specify content-type
