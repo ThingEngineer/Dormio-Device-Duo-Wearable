@@ -14,7 +14,7 @@ void setup() {
 
   I2CSelect(7);                        // Select I2C bus channel 7
   tempSensor.begin();                  // Initilize MLX90614 temperature sensor
-  IMU.begin();                         // Initialize LSM6DS3 6DOF IMU
+  imu.begin();                         // Initialize LSM6DS3 6DOF IMU
 
   /**********************************MAX30102*********************************/
   uint8_t ledBrightness = 32; // Options: 0=Off to 255=50mA
@@ -99,12 +99,12 @@ void sampleRateFull() {
 
 void sampleRateModHalfSF() {
   // Get and load IMU redings to data buffer
-  loadFloatBuffer(IMU.readFloatAccelX(), modSFSampleCounter, ACCEL_X_OFFSET);
-  loadFloatBuffer(IMU.readFloatAccelY(), modSFSampleCounter, ACCEL_Y_OFFSET);
-  loadFloatBuffer(IMU.readFloatAccelZ(), modSFSampleCounter, ACCEL_Z_OFFSET);
-  loadFloatBuffer(IMU.readFloatGyroX(), modSFSampleCounter, GYRO_X_OFFSET);
-  loadFloatBuffer(IMU.readFloatGyroY(), modSFSampleCounter, GYRO_Y_OFFSET);
-  loadFloatBuffer(IMU.readFloatGyroZ(), modSFSampleCounter, GYRO_Z_OFFSET);
+  loadFloatBuffer(imu.readFloatAccelX(), modSFSampleCounter, ACCEL_X_OFFSET);
+  loadFloatBuffer(imu.readFloatAccelY(), modSFSampleCounter, ACCEL_Y_OFFSET);
+  loadFloatBuffer(imu.readFloatAccelZ(), modSFSampleCounter, ACCEL_Z_OFFSET);
+  loadFloatBuffer(imu.readFloatGyroX(), modSFSampleCounter, GYRO_X_OFFSET);
+  loadFloatBuffer(imu.readFloatGyroY(), modSFSampleCounter, GYRO_Y_OFFSET);
+  loadFloatBuffer(imu.readFloatGyroZ(), modSFSampleCounter, GYRO_Z_OFFSET);
 
   //load16Buffer(analogRead(GSRpin), modSFSampleCounter, GSR_OFFSET); // Get and load GSR reding to data buffer
 

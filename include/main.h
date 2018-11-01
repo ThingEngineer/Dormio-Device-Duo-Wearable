@@ -31,7 +31,7 @@
 ****************************************************************************/
 MAX30105 hrSensor;
 Adafruit_MLX90614 tempSensor = Adafruit_MLX90614();
-LSM6DS3 IMU;
+LSM6DS3 imu;
 Adafruit_DRV2605 hapticFeedback;
 #define OLED_RESET 16
 Adafruit_SSD1306 display(OLED_RESET);
