@@ -50,6 +50,7 @@ void load32Buffer(uint32_t _bufferTemp, uint8_t _sampleCounter, uint16_t _arrayO
 void load16Buffer(uint16_t _bufferTemp, uint8_t _sampleCounter, uint16_t _arrayOffset);
 void loadMACBuffer(uint16_t _arrayOffset);
 void I2CSelect(uint8_t channel);
+void calcChecksum(uint8_t newValue);
 
 
 /****************************************************************************
