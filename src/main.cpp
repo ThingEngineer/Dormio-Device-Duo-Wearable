@@ -154,7 +154,7 @@ void loadFloatBuffer(float _bufferTemp, uint8_t _sampleCounter, uint16_t _arrayO
   uint8_t mantissa = (uint8_t)100 * _mantissa; // Retain 2 decimal places of the mantissa as a whole number
   _byteOffset = (_sampleCounter * 3); // Offset 3 bytes to account for the characteristic as well
   dataBuffer[_arrayOffset + _byteOffset + 2] = mantissa; // Load the mantissa of the floating point to the data buffer
-  calcChecksum(dataBuffer[_arrayOffset + 2]); // Add new buffer value to checksum
+  calcChecksum(mantissa); // Add new buffer value to checksum
 }
 
 
@@ -190,7 +190,7 @@ void loadMACBuffer(uint16_t _arrayOffset) {
   for ( uint8_t i = 0; i < 6; i++ ) // Load mac address array into data buffer array
   {
     dataBuffer[_arrayOffset + i] = mac[(5 - i)]; // Reverse byte order to allow sequential retreval on the server
-    calcChecksum(mac[i]); // Add MAC address to the checksum
+    calcChecksum(mac[(5 - i)]); // Add MAC address to the checksum
   }
 }
 
