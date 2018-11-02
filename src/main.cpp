@@ -69,6 +69,9 @@ void setup() {
   display.print(F(":"));
   display.println(mac[0],HEX);
   display.display();
+
+  delay(1000);
+  checkForUpdates();
 }
 
 /**
@@ -295,4 +298,71 @@ void I2CSelect(uint8_t _channel) {
   Wire.beginTransmission(0x70);
   Wire.write(1 << _channel);
   Wire.endTransmission();
+}
+
+/**
+ * Check for a new firmware version and flash OTA if one is available
+ */
+void checkForUpdates() {
+  String fwURL = String( fwUrlBase ); // Get firmware URL base
+  String fwVersionURL = fwURL;
+  fwVersionURL.concat( F("ver/") ); // Build version request URL
+  String encodedMAC = getFormatedMAC();
+  fwVersionURL.concat( encodedMAC );
+
+  display.clearDisplay();
+  display.setCursor(0,0);
+  display.print( F("Build# ") );
+  display.println( firmwareVersion );
+  display.println( F("Checking For Updates") );
+  display.display();
+
+  HTTPClient httpClient;
+  httpClient.begin( fwVersionURL ); // Specify destination for HTTP request
+  int httpCode = httpClient.GET(); // Send the GET request
+  if( httpCode == 200 ) {
+    String newFWVersion = httpClient.getString(); // Get current version according to the update server
+    uint16_t newVersion = newFWVersion.toInt();
+
+    if( newVersion > firmwareVersion ) { // If there is a newer version then flash OTA
+      display.print( F("Updating From Version") );
+      display.print( firmwareVersion );
+      display.print( F(" to ") );
+      display.println( newFWVersion );
+      display.display();
+
+      String fwImageURL = fwURL; // Build firmware binary request URL
+      fwImageURL.concat( F("bin/") );
+      fwImageURL.concat( encodedMAC );
+      t_httpUpdate_return ret = ESPhttpUpdate.update( fwImageURL ); // Atempt to do update
+
+      display.print( F("Update Error: ") );
+      display.println( ret );
+      display.println( ESPhttpUpdate.getLastError() );
+      display.display();
+    }
+    else {
+      display.println( F("No Updates") );
+      display.display();
+    }
+  }
+  else {
+    display.print( F("Version Check Failed Error: ") );
+    display.println( httpCode );
+    display.display();
+  }
+  httpClient.end(); // Free resources
+}
+
+/**
+ * Get zero padded MAC address string
+ *
+ * @return string Formated MAC
+ */
+String getFormatedMAC()
+{
+  char result[14];
+
+  snprintf( result, sizeof( result ), "%02x%02x%02x%02x%02x%02x", mac[ 5 ], mac[ 4 ], mac[ 3 ], mac[ 2 ], mac[ 1 ], mac[ 0 ] );
+  return String( result );
 }

@@ -15,7 +15,8 @@
 #include <Arduino.h>                   // Main include file for the Arduino SDK
 #include <Wire.h>                      // Arduino I2C library
 #include <ESP8266WiFi.h>               // ESP8266 core for Arduino
-#include <ESP8266HTTPClient.h>         // ESP8266 HTTP client
+#include <ESP8266HTTPClient.h>         // HTTP client for ESP8266
+#include <ESP8266httpUpdate.h>         // HTTP OTA Update for ESP8266
 #include <MAX30105.h>                  // SparkFun MAX3010x Pulse and Proximity Sensor Library - https://github.com/sparkfun/SparkFun_MAX3010x_Sensor_Library
 #include <Adafruit_MLX90614.h>         // MLX90614 temperature sensor library - https://github.com/adafruit/Adafruit-MLX90614-Library
 #include <SparkFunLSM6DS3.h>           // LSM6DS3 accelerometer and gyroscope 6DoF IMU Library
@@ -53,6 +54,8 @@ void load16Buffer(uint16_t _bufferTemp, uint8_t _sampleCounter, uint16_t _arrayO
 void loadMACBuffer(uint16_t _arrayOffset);
 void I2CSelect(uint8_t channel);
 void calcChecksum(uint8_t newValue);
+void checkForUpdates();
+String getFormatedMAC();
 
 
 /****************************************************************************
