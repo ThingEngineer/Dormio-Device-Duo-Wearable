@@ -30,10 +30,10 @@
 /****************************************************************************
 * Constructors
 ****************************************************************************/
-MAX30105 hrSensor;
-Adafruit_MLX90614 tempSensor = Adafruit_MLX90614();
+MAX30105 ppg;
+Adafruit_MLX90614 irTherm = Adafruit_MLX90614();
 LSM6DS3 imu;
-Adafruit_DRV2605 hapticFeedback;
+Adafruit_DRV2605 haptic;
 #define OLED_RESET 16
 Adafruit_SSD1306 display(OLED_RESET);
 Adafruit_ADS1115 ads;
@@ -67,9 +67,9 @@ void calcChecksum(uint8_t newValue);
 #define ST 5                           // Sampling time in seconds
 #define SF 50                          // Sampling frequency in Hz - this should match MAX30102 (sampleRate / sampleAverage / 2) (2 because there is one sample for each, ir & red)
 #define HALF_SF (SF / 2)               // Sampling frequency / 2
-#define SAMPLE_COUNT (ST * SF)         // MAX30102 sample count per cycle
+#define SAMPLE_COUNT (ST * SF)         // MAX30102 sample count per frame
 
-// Data array member sizes in totly bytes per cycle
+// Data array member sizes in totly bytes per frame
 #define IR_RED_SIZE (SAMPLE_COUNT * 4) // MAX30102 ir/red buffer - sample count * 4(bytes per sample)
 #define ECG_SIZE (SAMPLE_COUNT * 2)    // ECG ADC1115 adc sample - sample count * 2(bytes per sample)
 #define DIE_TEMP_SIZE 3                // MAX30102 die temperture

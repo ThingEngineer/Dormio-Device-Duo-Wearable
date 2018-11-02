@@ -10,13 +10,13 @@ void setup() {
   Wire.begin(4,5);                     // Initial I2C and join bus as master
 
   I2CSelect(6);                        // Select I2C bus channel 6
-  hapticFeedback.begin();              // Initialize DRV2605 haptic feedback driver
-  hapticFeedback.setMode(DRV2605_MODE_INTTRIG); // Set DRV2605 trigger mode
-  hapticFeedback.selectLibrary(1);     // Set haptic feedback library
-  hapticFeedback.setWaveform(1, 1);    // Strong click 100%, see datasheet part 11.2
+  haptic.begin();                      // Initialize DRV2605 haptic feedback driver
+  haptic.setMode(DRV2605_MODE_INTTRIG);// Set DRV2605 trigger mode
+  haptic.selectLibrary(1);             // Set haptic feedback library
+  haptic.setWaveform(1, 1);            // Strong click 100%, see datasheet part 11.2
 
   I2CSelect(7);                        // Select I2C bus channel 7
-  tempSensor.begin();                  // Initilize MLX90614 temperature sensor
+  irTherm.begin();                     // Initilize MLX90614 temperature sensor
   imu.begin();                         // Initialize LSM6DS3 6DOF IMU
   ads.begin();                         // Initialize ADS1115 ADC
   ads.setGain(GAIN_ONE);               // Default ADS1115 amplifier gain
@@ -27,9 +27,9 @@ void setup() {
   uint16_t sampleRate = 800;           // Options: 50, 100, 200, 400, 800, 1000, 1600, 3200
   uint16_t pulseWidth = 215;           // Options: 69, 118, 215, 411
   uint16_t adcRange = 2048;            // Options: 2048, 4096, 8192, 16384
-  hrSensor.begin();                    // Initialize MAX30102
-  hrSensor.setup(ledBrightness, sampleAverage, ledMode, sampleRate, pulseWidth, adcRange); // Set MAX30102 options
-  hrSensor.readTemperature();          // Initialize die temperture reading
+  ppg.begin();                         // Initialize MAX30102
+  ppg.setup(ledBrightness, sampleAverage, ledMode, sampleRate, pulseWidth, adcRange); // Set MAX30102 options
+  ppg.readTemperature();               // Initialize die temperture reading
 
   /************************************OLED***********************************/
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C); // initialize with the I2C addr 0x3C (for the 128x32)
@@ -82,29 +82,29 @@ void loop() {
   if ( fullSampleCounter == SAMPLE_COUNT ) {
     sampleRateSingle(); // Minimum sample rate (1 every 5 seconds)
     encryptBuffer(); // Encrypt the data buffer before sending
-    httpPost(); // Sample cycle complete, send data
-    fullSampleCounter = 0; // Cycle complete, reset counters
+    httpPost(); // Sample frame complete, send data
+    fullSampleCounter = 0; // Frame complete, reset counters
     modSFSampleCounter = 0;
     checksum = 0; // Reset checksum
   }
 }
 
 /**
- * Function holding routines excecuted at the maximum sampling frequency per frame/cycle
+ * Function holding routines excecuted at the maximum sampling frequency per frame
  */
 void sampleRateFull() {
   // Load IMU redings to data buffer
-  load32Buffer(hrSensor.getIR(), fullSampleCounter, IR_OFFSET);
-  load32Buffer(hrSensor.getRed(), fullSampleCounter, RED_OFFSET);
+  load32Buffer(ppg.getIR(), fullSampleCounter, IR_OFFSET);
+  load32Buffer(ppg.getRed(), fullSampleCounter, RED_OFFSET);
   // Load ECG reading to data buffer
   load16Buffer(ads.readADC_SingleEnded(ECGpin), fullSampleCounter, ECG_OFFSET);
 
-  hrSensor.nextSample();
+  ppg.nextSample();
   fullSampleCounter++;
 }
 
 /**
- * Function holding routines excecuted at multiples of (SF*0.5)/SAMPLE_COUNT per frame/cycle
+ * Function holding routines excecuted at multiples of (SF*0.5)/SAMPLE_COUNT per frame
  */
 void sampleRateModHalfSF() {
   // Load IMU redings to data buffer
@@ -121,12 +121,12 @@ void sampleRateModHalfSF() {
 }
 
 /**
- * Function holding routines excecuted once per frame/cycle
+ * Function holding routines excecuted once per frame
  */
 void sampleRateSingle() {
-  loadFloatBuffer(hrSensor.readTemperature(), 0, DIE_TEMP_OFFSET); // Load current MAX30102 die temperture to data buffer
-  loadFloatBuffer(tempSensor.readObjectTempC(), 0, SKIN_TEMP_OFFSET); // Load current skin temperture to data buffer
-  loadFloatBuffer(tempSensor.readAmbientTempC(), 0, AMBIENT_TEMP_OFFSET); // Load current ambient temperture to data buffer
+  loadFloatBuffer(ppg.readTemperature(), 0, DIE_TEMP_OFFSET); // Load current MAX30102 die temperture to data buffer
+  loadFloatBuffer(irTherm.readObjectTempC(), 0, SKIN_TEMP_OFFSET); // Load current skin temperture to data buffer
+  loadFloatBuffer(irTherm.readAmbientTempC(), 0, AMBIENT_TEMP_OFFSET); // Load current ambient temperture to data buffer
   load32Buffer((millis() / 1000), 0, EPOCH_OFFSET); // Load current epoch to data buffer
   load32Buffer(frameCounter, 0, FRAME_COUNT_OFFSET); // Load current frame count to data buffer
   loadMACBuffer(MAC_OFFSET); // Load MAC address into data buffer
@@ -254,7 +254,7 @@ void httpPost() {
       display.println(httpResponseCode);
       display.display();
       I2CSelect(6); // Select I2C bus channel 6
-      hapticFeedback.go(); // Play the effect
+      haptic.go(); // Play the effect
       I2CSelect(7); // Select I2C bus channel 7
     } else {
       display.clearDisplay();
