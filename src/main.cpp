@@ -77,7 +77,7 @@ void setup() {
 void loop() {
   sampleRateFull(); // Full sample rate (50 per second)
 
-  if ( fullSampleCounter % HALF_SF == 0) sampleRateModHalfSF(); // HALF_SF / SAMPLE_COUNT (2 per second)
+  if ( fullSampleCounter % HALF_SF == 0) sampleRateModHalfSF(); // SAMPLE_COUNT/HALF_SF (2 per second)
 
   if ( fullSampleCounter == SAMPLE_COUNT ) {
     sampleRateSingle(); // Minimum sample rate (1 every 5 seconds)
@@ -104,7 +104,7 @@ void sampleRateFull() {
 }
 
 /**
- * Function holding routines excecuted at multiples of (SF*0.5)/SAMPLE_COUNT per frame
+ * Function holding routines excecuted at multiples of SAMPLE_COUNT/HALF_SF per frame
  */
 void sampleRateModHalfSF() {
   // Load IMU redings to data buffer
