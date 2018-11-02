@@ -1,14 +1,17 @@
 #include "main.h"
 
-
+/**
+ * Initialization routines
+ */
 void setup() {
   Serial.begin(115200);                // Initialize serial data transmission and set baud rate
 
+  /************************************I2C************************************/
   Wire.begin(4,5);                     // Initial I2C and join bus as master
 
   I2CSelect(6);                        // Select I2C bus channel 6
   hapticFeedback.begin();              // Initialize DRV2605 haptic feedback driver
-  hapticFeedback.setMode(DRV2605_MODE_INTTRIG);
+  hapticFeedback.setMode(DRV2605_MODE_INTTRIG); // Set DRV2605 trigger mode
   hapticFeedback.selectLibrary(1);     // Set haptic feedback library
   hapticFeedback.setWaveform(1, 1);    // Strong click 100%, see datasheet part 11.2
 
@@ -18,25 +21,21 @@ void setup() {
   ads.begin();                         // Initialize ADS1115 ADC
   ads.setGain(GAIN_ONE);               // Default ADS1115 amplifier gain
 
-  /**********************************MAX30102*********************************/
-  uint8_t ledBrightness = 32; // Options: 0=Off to 255=50mA
-  uint8_t sampleAverage = 8; // Options: 1, 2, 4, 8, 16, 32
-  uint8_t ledMode = 2; // Options: 1 = Red only, 2 = Red + IR, 3 = Red + IR + Green
-  uint16_t sampleRate = 800; // Options: 50, 100, 200, 400, 800, 1000, 1600, 3200
-  uint16_t pulseWidth = 215; // Options: 69, 118, 215, 411
-  uint16_t adcRange = 2048; // Options: 2048, 4096, 8192, 16384
-
-  if ( hrSensor.begin() == false ) Serial.println(F("MAX30102 Error"));
-  hrSensor.setup(ledBrightness, sampleAverage, ledMode, sampleRate, pulseWidth, adcRange);
-  hrSensor.readTemperature(); // Initial temperture reading
-  /*END******************************MAX30102*********************************/
+  uint8_t ledBrightness = 32;          // Options: 0=Off to 255=50mA
+  uint8_t sampleAverage = 8;           // Options: 1, 2, 4, 8, 16, 32
+  uint8_t ledMode = 2;                 // Options: 1 = Red only, 2 = Red + IR, 3 = Red + IR + Green
+  uint16_t sampleRate = 800;           // Options: 50, 100, 200, 400, 800, 1000, 1600, 3200
+  uint16_t pulseWidth = 215;           // Options: 69, 118, 215, 411
+  uint16_t adcRange = 2048;            // Options: 2048, 4096, 8192, 16384
+  hrSensor.begin();                    // Initialize MAX30102
+  hrSensor.setup(ledBrightness, sampleAverage, ledMode, sampleRate, pulseWidth, adcRange); // Set MAX30102 options
+  hrSensor.readTemperature();          // Initialize die temperture reading
 
   /************************************OLED***********************************/
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C); // initialize with the I2C addr 0x3C (for the 128x32)
   display.clearDisplay();
   display.setTextSize(1);
   display.setTextColor(WHITE);
-  /*END********************************OLED***********************************/
 
   /***********************************ESP8266*********************************/
   display.setCursor(0,0);
@@ -70,17 +69,18 @@ void setup() {
   display.print(F(":"));
   display.println(mac[0],HEX);
   display.display();
-  /*END*******************************ESP8266*********************************/
 }
 
-
+/**
+ * Main program loop
+ */
 void loop() {
   sampleRateFull(); // Full sample rate (50 per second)
 
-  if ( fullSampleCounter % HALF_SF == 0) sampleRateModHalfSF(); // SAMPLE_COUNT / HALF_SF (2 per second)
+  if ( fullSampleCounter % HALF_SF == 0) sampleRateModHalfSF(); // HALF_SF / SAMPLE_COUNT (2 per second)
 
   if ( fullSampleCounter == SAMPLE_COUNT ) {
-    sampleRateSingle(); // Minimum sample rate
+    sampleRateSingle(); // Minimum sample rate (1 every 5 seconds)
     encryptBuffer(); // Encrypt the data buffer before sending
     httpPost(); // Sample cycle complete, send data
     fullSampleCounter = 0; // Cycle complete, reset counters
@@ -89,7 +89,9 @@ void loop() {
   }
 }
 
-
+/**
+ * Function holding routines excecuted at the maximum sampling frequency per frame/cycle
+ */
 void sampleRateFull() {
   // Load IMU redings to data buffer
   load32Buffer(hrSensor.getIR(), fullSampleCounter, IR_OFFSET);
@@ -101,7 +103,9 @@ void sampleRateFull() {
   fullSampleCounter++;
 }
 
-
+/**
+ * Function holding routines excecuted at multiples of (SF*0.5)/SAMPLE_COUNT per frame/cycle
+ */
 void sampleRateModHalfSF() {
   // Load IMU redings to data buffer
   loadFloatBuffer(imu.readFloatAccelX(), modSFSampleCounter, ACCEL_X_OFFSET);
@@ -116,7 +120,9 @@ void sampleRateModHalfSF() {
   modSFSampleCounter++;
 }
 
-
+/**
+ * Function holding routines excecuted once per frame/cycle
+ */
 void sampleRateSingle() {
   loadFloatBuffer(hrSensor.readTemperature(), 0, DIE_TEMP_OFFSET); // Load current MAX30102 die temperture to data buffer
   loadFloatBuffer(tempSensor.readObjectTempC(), 0, SKIN_TEMP_OFFSET); // Load current skin temperture to data buffer
@@ -137,14 +143,20 @@ void sampleRateSingle() {
   frameCounter++;
 }
 
-
+/**
+ * Load sensor data into data buffer array - 32 bit floating point converted to 8 bit array[3], (uint16_t).(uint8_t)
+ *
+ * @param _bufferTemp    Value to be loaded into the data buffer
+ * @param _sampleCounter Sample loop counter
+ * @param _arrayOffset   Data array offset
+ */
 void loadFloatBuffer(float _bufferTemp, uint8_t _sampleCounter, uint16_t _arrayOffset) {
   int16_t characteristic = (int16_t)(_bufferTemp); // Remove the mantissa retaining just a signed integer portion of the value
   if (characteristic < 0.0) characteristic = (characteristic ^ 0x7FFF) + 1; // If negative remove two's complement signing, leave only the significant bit
   // Load the characteristic of the floating point to the data buffer
   uint16_t _byteOffset;
   uint8_t _shiftOffset;
-  for ( int i = 0; i < 2; i++ ) // Load sensor data into data buffer array (16 bit Little endian to 8 bit array[2])
+  for ( int i = 0; i < 2; i++ ) // Load sensor data into data buffer array - 16 bit Little endian to 8 bit array[2]
   {
     _byteOffset = ((_sampleCounter * 3) + i); // Offset 3 bytes to account for the matissa as well
     _shiftOffset = (8 * i);
@@ -161,11 +173,17 @@ void loadFloatBuffer(float _bufferTemp, uint8_t _sampleCounter, uint16_t _arrayO
   calcChecksum(mantissa); // Add new buffer value to checksum
 }
 
-
+/**
+ * Load sensor data into data buffer array - 32 bit Little endian to 8 bit array[4]
+ *
+ * @param _bufferTemp    Value to be loaded into the data buffer
+ * @param _sampleCounter Sample loop counter
+ * @param _arrayOffset   Data array offset
+ */
 void load32Buffer(uint32_t _bufferTemp, uint8_t _sampleCounter, uint16_t _arrayOffset) {
   uint16_t _byteOffset;
   uint8_t _shiftOffset;
-  for ( int i = 0; i < 4; i++ ) // Load sensor data into data buffer array (32 bit Little endian to 8 bit array[4])
+  for ( int i = 0; i < 4; i++ )
   {
     _byteOffset = ((_sampleCounter * 4) + i);
     _shiftOffset = (8 * i);
@@ -175,11 +193,17 @@ void load32Buffer(uint32_t _bufferTemp, uint8_t _sampleCounter, uint16_t _arrayO
   }
 }
 
-
+/**
+ * Load sensor data into data buffer array - 16 bit Little endian to 8 bit array[2]
+ *
+ * @param _bufferTemp    Value to be loaded into the data buffer
+ * @param _sampleCounter Sample loop counter
+ * @param _arrayOffset   Data array offset
+ */
 void load16Buffer(uint16_t _bufferTemp, uint8_t _sampleCounter, uint16_t _arrayOffset) {
   uint16_t _byteOffset;
   uint8_t _shiftOffset;
-  for ( int i = 0; i < 2; i++ ) // Load sensor data into data buffer array (16 bit Little endian to 8 bit array[2])
+  for ( int i = 0; i < 2; i++ )
   {
     _byteOffset = ((_sampleCounter * 2) + i);
     _shiftOffset = (8 * i);
@@ -189,21 +213,31 @@ void load16Buffer(uint16_t _bufferTemp, uint8_t _sampleCounter, uint16_t _arrayO
   }
 }
 
-
+/**
+ * Load MAC address array into the data buffer array
+ *
+ * @param _arrayOffset Data array offset
+ */
 void loadMACBuffer(uint16_t _arrayOffset) {
-  for ( uint8_t i = 0; i < 6; i++ ) // Load mac address array into data buffer array
+  for ( uint8_t i = 0; i < 6; i++ )
   {
     dataBuffer[_arrayOffset + i] = mac[(5 - i)]; // Reverse byte order to allow sequential retreval on the server
     calcChecksum(mac[(5 - i)]); // Add MAC address to the checksum
   }
 }
 
-
-void calcChecksum(uint8_t newValue) { // Calculate simple XOR checksum
+/**
+ * Calculate XOR checksum
+ *
+ * @param newValue Value to add to the running checksum
+ */
+void calcChecksum(uint8_t newValue) {
   checksum = checksum ^ newValue;
 }
 
-
+/**
+ * Send the data buffer to the post_url set in env.h
+ */
 void httpPost() {
   if( WiFi.status() == WL_CONNECTED ) // Check WiFi connection status
   {
@@ -219,9 +253,9 @@ void httpPost() {
     {
       display.println(httpResponseCode);
       display.display();
-      I2CSelect(6);                        // Select I2C bus channel 6
-      hapticFeedback.go();                 // Play the effect
-      I2CSelect(7);                        // Select I2C bus channel 7
+      I2CSelect(6); // Select I2C bus channel 6
+      hapticFeedback.go(); // Play the effect
+      I2CSelect(7); // Select I2C bus channel 7
     } else {
       display.clearDisplay();
       display.setCursor(0,0);
@@ -239,7 +273,9 @@ void httpPost() {
   }
 }
 
-
+/**
+ * Encrypt the data buffer using the encryptionKey array set in env.h
+ */
 void encryptBuffer() {
   for(uint8_t key = 0; key < sizeof(encryptionKey); key++) { // Loop through each encryption key
     for(uint16_t data = 0; data < BUFFER_SIZE; data++) { // Loop through each byte in the data buffer
@@ -248,7 +284,11 @@ void encryptBuffer() {
   }
 }
 
-
+/**
+ * Activates one of the eight I2C channels available on the TCA9548A
+ *
+ * @param channel Select a channel from 0-7
+ */
 void I2CSelect(uint8_t channel) {
   if (channel > 7) return;
 
