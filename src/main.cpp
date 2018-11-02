@@ -229,10 +229,10 @@ void loadMACBuffer(uint16_t _arrayOffset) {
 /**
  * Calculate XOR checksum
  *
- * @param newValue Value to add to the running checksum
+ * @param _value Value to add to the running checksum
  */
-void calcChecksum(uint8_t newValue) {
-  checksum = checksum ^ newValue;
+void calcChecksum(uint8_t _value) {
+  checksum = checksum ^ _value;
 }
 
 /**
