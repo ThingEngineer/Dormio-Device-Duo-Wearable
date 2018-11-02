@@ -241,13 +241,13 @@ void calcChecksum(uint8_t _value) {
 void httpPost() {
   if( WiFi.status() == WL_CONNECTED ) // Check WiFi connection status
   {
-    HTTPClient http;
+    HTTPClient httpClient;
 
-    http.begin(postURL); // Specify destination for HTTP request
-    http.addHeader(F("Content-Type"), F("application/json")); // Specify content-type
-    http.addHeader(F("Content-Length"), String(BUFFER_SIZE)); // Specify content length
+    httpClient.begin(postURL); // Specify destination for HTTP request
+    httpClient.addHeader(F("Content-Type"), F("application/json")); // Specify content-type
+    httpClient.addHeader(F("Content-Length"), String(BUFFER_SIZE)); // Specify content length
 
-    uint16_t httpResponseCode = http.POST(dataBuffer, BUFFER_SIZE); // Send the POST request
+    uint16_t httpResponseCode = httpClient.POST(dataBuffer, BUFFER_SIZE); // Send the POST request
 
     if( httpResponseCode > 0 )
     {
@@ -264,7 +264,7 @@ void httpPost() {
       display.display();
     }
 
-    http.end(); // Free resources
+    httpClient.end(); // Free resources
   } else {
      display.clearDisplay();
      display.setCursor(0,0);
