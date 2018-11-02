@@ -289,10 +289,10 @@ void encryptBuffer() {
  *
  * @param channel Select a channel from 0-7
  */
-void I2CSelect(uint8_t channel) {
-  if (channel > 7) return;
+void I2CSelect(uint8_t _channel) {
+  if (_channel > 7) return;
 
   Wire.beginTransmission(0x70);
-  Wire.write(1 << channel);
+  Wire.write(1 << _channel);
   Wire.endTransmission();
 }
