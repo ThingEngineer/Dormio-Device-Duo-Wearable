@@ -236,14 +236,14 @@ void calcChecksum(uint8_t newValue) {
 }
 
 /**
- * Send the data buffer to the post_url set in env.h
+ * Send the data buffer to the postURL set in env.h
  */
 void httpPost() {
   if( WiFi.status() == WL_CONNECTED ) // Check WiFi connection status
   {
     HTTPClient http;
 
-    http.begin(post_url); // Specify destination for HTTP request
+    http.begin(postURL); // Specify destination for HTTP request
     http.addHeader(F("Content-Type"), F("application/json")); // Specify content-type
     http.addHeader(F("Content-Length"), String(BUFFER_SIZE)); // Specify content length
 
