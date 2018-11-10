@@ -14,9 +14,15 @@
 ****************************************************************************/
 #include <Arduino.h>                   // Main include file for the Arduino SDK
 #include <Wire.h>                      // Arduino I2C library
+#include <Esp.h>                       // ESP8266-specific APIs
+#include <FS.h>                        // ESP8266 file system wrapper
 #include <ESP8266WiFi.h>               // ESP8266 core for Arduino
 #include <ESP8266HTTPClient.h>         // HTTP client for ESP8266
 #include <ESP8266httpUpdate.h>         // HTTP OTA Update for ESP8266
+#include <DNSServer.h>                 // ESP8266 simple DNS server
+#include <ESP8266WebServer.h>          // ESP8266 simple web-server
+#include <WiFiManager.h>               // ESP8266 WiFi Connection manager with web captive portal - https://github.com/tzapu/WiFiManager
+#include <JC_Button.h>                 // Arduino Button Library - https://github.com/JChristensen/JC_Button
 #include <MAX30105.h>                  // SparkFun MAX3010x Pulse and Proximity Sensor Library - https://github.com/sparkfun/SparkFun_MAX3010x_Sensor_Library
 #include <Adafruit_MLX90614.h>         // MLX90614 temperature sensor library - https://github.com/adafruit/Adafruit-MLX90614-Library
 #include <SparkFunLSM6DS3.h>           // LSM6DS3 accelerometer and gyroscope 6DoF IMU Library
@@ -31,6 +37,7 @@
 /****************************************************************************
 * Constructors
 ****************************************************************************/
+Button *wifiBtn;
 MAX30105 ppg;
 Adafruit_MLX90614 irTherm = Adafruit_MLX90614();
 LSM6DS3 imu;
@@ -43,6 +50,10 @@ Adafruit_ADS1115 ads;
 /****************************************************************************
 * Function prototypes
 ****************************************************************************/
+void connectToWiFi(boolean resetSettings = false);
+void WiFiConfigMode(WiFiManager *myWiFiManager);
+void WiFiSuccess();
+void wifiResetButton();
 void sampleRateFull();
 void sampleRateModHalfSF();
 void sampleRateSingle();
@@ -62,12 +73,17 @@ String getFormatedMAC();
 /****************************************************************************
 * Port aliases
 ****************************************************************************/
+#define WIFI_BUTTON_PIN 0              // WiFi reset button on GPIO0 (D3)
 #define GSRpin 0                       // Galvanic skin response ADS1115 analog input A0
 #define ECGpin 1                       // ECG/EKG/EMG Electrocardiography/Electromyography ADS1115 analog input A1
 
 /****************************************************************************
 * Variable and constant declarations
 ****************************************************************************/
+#define PULLUP true
+#define INVERT true
+#define DEBOUNCE_MS 20
+
 #define ST 5                           // Sampling time in seconds
 #define SF 50                          // Sampling frequency in Hz - this should match MAX30102 (sampleRate / sampleAverage / 2) (2 because there is one sample for each, ir & red)
 #define HALF_SF (SF / 2)               // Sampling frequency / 2

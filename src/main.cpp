@@ -6,6 +6,8 @@
 void setup() {
   Serial.begin(115200);                // Initialize serial data transmission and set baud rate
 
+  wifiBtn = new Button(WIFI_BUTTON_PIN, PULLUP, INVERT, DEBOUNCE_MS);
+
   /************************************I2C************************************/
   Wire.begin(4,5);                     // Initial I2C and join bus as master
 
@@ -40,46 +42,21 @@ void setup() {
 
   /***********************************ESP8266*********************************/
   display.setCursor(0,0);
-  display.println(F(" Dormio Device Duo"));
-  display.println(F(" --==Deep Dream==--"));
-  display.println(F(" Connecting to WiFi"));
+  display.println(F("Dormio Device Duo"));
+  display.println(F("--==Deep Dream==--"));
+  display.println(F("Connecting to WiFi"));
   display.display();
-  WiFi.macAddress(mac); // Read MAC address into mac array
-  WiFi.mode(WIFI_STA);
-  WiFi.begin(ssid, password);
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(250);
-    display.print(F("."));
-    display.display();
-  }
-  display.clearDisplay();
-  display.setCursor(0,0);
-  display.println(F("Connected To:"));
-  display.println(WiFi.SSID());
-  display.print(F("IP "));
-  display.println(WiFi.localIP());
-  display.print(F("MAC "));
-  display.print(mac[5],HEX);
-  display.print(F(":"));
-  display.print(mac[4],HEX);
-  display.print(F(":"));
-  display.print(mac[3],HEX);
-  display.print(F(":"));
-  display.print(mac[2],HEX);
-  display.print(F(":"));
-  display.print(mac[1],HEX);
-  display.print(F(":"));
-  display.println(mac[0],HEX);
-  display.display();
-
   delay(1000);
-  checkForUpdates();
+
+  connectToWiFi();
 }
 
 /**
  * Main program loop
  */
 void loop() {
+  wifiResetButton(); // Check for wifi reset button press
+
   sampleRateFull(); // Full sample rate (50 per second)
 
   if ( bufferCounter == SF ) normalizePPG(); // Every SF interval (50 samples)
@@ -318,6 +295,7 @@ void httpPost() {
      display.setCursor(0,0);
      display.print(F("No WiFI"));
      display.display();
+     connectToWiFi();
   }
 }
 
@@ -397,6 +375,7 @@ void checkForUpdates() {
     display.display();
   }
   httpClient.end(); // Free resources
+  delay(2000);
 }
 
 /**
@@ -411,3 +390,100 @@ String getFormatedMAC()
   snprintf( result, sizeof( result ), "%02x%02x%02x%02x%02x%02x", mac[ 5 ], mac[ 4 ], mac[ 3 ], mac[ 2 ], mac[ 1 ], mac[ 0 ] );
   return String( result );
 }
+
+/**
+ * Connect to existing WiFi credentials or start an access point and load a captive portal to configure a connection
+ *
+ * @param resetSettings If set to true calling this function clears any existing WiFi credentials
+ */
+void connectToWiFi(boolean resetSettings) {
+  WiFiManager wifiManager; // Local WiFiManager Initialization
+
+  wifiManager.setDebugOutput(false); // Disable debug output
+
+  if (resetSettings) wifiManager.resetSettings(); // If flag is set reset wifi credentials
+
+  wifiManager.setAPCallback(WiFiConfigMode); // Set config mode callback
+  wifiManager.setSaveConfigCallback(WiFiSuccess); // Set success callback
+
+  wifiManager.setBreakAfterConfig(true); // Exit after config, even if connection is unsuccessful
+
+  // Attempt to connect to last known WiFi credentials
+  // If none exist or the connection fails start an access point name "Dormio Setup"
+  // Enter into a blocking loop awaiting configuration
+  if (!wifiManager.autoConnect("Dormio Setup")) {
+    delay(3000);
+    ESP.reset();
+  }
+}
+
+/**
+ * Called when access point and captive configuration portal are ready and updates OLED display with instructions
+ */
+void WiFiConfigMode(WiFiManager *myWiFiManager) {
+  display.clearDisplay();
+  display.setCursor(0,0);
+  display.println(F("WiFi Setup Mode"));
+  display.println(F("Connect To SSID:"));
+  display.println();
+  display.println("\"" + myWiFiManager->getConfigPortalSSID() + "\"");
+  display.display();
+}
+
+/**
+ * Called when connection to WiFi was successful and updates OLED display with connection info
+ */
+void WiFiSuccess() {
+  WiFi.macAddress(mac); // Read MAC address into mac array
+  display.clearDisplay();
+  display.setCursor(0,0);
+  display.println(F("Connected To:"));
+  display.println(WiFi.SSID());
+  display.print(F("IP "));
+  display.println(WiFi.localIP());
+  display.print(F("MAC "));
+  display.print(mac[5],HEX);
+  display.print(F(":"));
+  display.print(mac[4],HEX);
+  display.print(F(":"));
+  display.print(mac[3],HEX);
+  display.print(F(":"));
+  display.print(mac[2],HEX);
+  display.print(F(":"));
+  display.print(mac[1],HEX);
+  display.print(F(":"));
+  display.println(mac[0],HEX);
+  display.display();
+
+  delay(2000);
+  checkForUpdates();
+}
+
+/**
+ * Handles button press to toggle OLED display and reset WiFi connection
+ */
+void wifiResetButton() {
+  wifiBtn->read();
+
+  if (wifiBtn->wasPressed()) {
+    pressedAtMillis = millis();
+  }
+
+  if (wifiBtn->wasReleased()) {
+    if (pressedForMillis > longPressInterval) {
+      // Long press, reset WiFi credentials and start config portal AP
+      displayOn();
+      display.clearDisplay();
+      display.setCursor(0,9);
+      display.invertDisplay(true);
+      display.println("   Resetting WiFi");
+      display.display();
+      delay(1000);
+      display.invertDisplay(false);
+      connectToWiFi(true);
+    } else {
+    }
+  }
+  pressedForMillis = millis() - pressedAtMillis;
+}
+
