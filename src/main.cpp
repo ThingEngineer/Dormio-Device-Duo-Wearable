@@ -27,6 +27,7 @@ void setup() {
   uint16_t sampleRate = 800;           // Options: 50, 100, 200, 400, 800, 1000, 1600, 3200
   uint16_t pulseWidth = 215;           // Options: 69, 118, 215, 411
   uint16_t adcRange = 2048;            // Options: 2048, 4096, 8192, 16384
+  redPulseAmplitude = ledBrightness;   // Initial variable red LED pulse amplitude
   ppg.begin();                         // Initialize MAX30102
   ppg.setup(ledBrightness, sampleAverage, ledMode, sampleRate, pulseWidth, adcRange); // Set MAX30102 options
   ppg.readTemperature();               // Initialize die temperture reading
@@ -80,6 +81,8 @@ void setup() {
 void loop() {
   sampleRateFull(); // Full sample rate (50 per second)
 
+  if ( bufferCounter == SF ) normalizePPG(); // Every SF interval (50 samples)
+
   if ( fullSampleCounter % HALF_SF == 0) sampleRateModHalfSF(); // SAMPLE_COUNT/HALF_SF (2 per second)
 
   if ( fullSampleCounter == SAMPLE_COUNT ) {
@@ -96,14 +99,17 @@ void loop() {
  * Function holding routines excecuted at the maximum sampling frequency per frame
  */
 void sampleRateFull() {
-  // Load IMU redings to data buffer
-  load32Buffer(ppg.getIR(), fullSampleCounter, IR_OFFSET);
-  load32Buffer(ppg.getRed(), fullSampleCounter, RED_OFFSET);
+  // Load IMU redings to data buffers
+  irBuffer[bufferCounter] = ppg.getIR();
+  redBuffer[bufferCounter] = ppg.getRed();
+  load32Buffer(irBuffer[bufferCounter], fullSampleCounter, IR_OFFSET);
+  load32Buffer(redBuffer[bufferCounter], fullSampleCounter, RED_OFFSET);
   // Load ECG reading to data buffer
   load16Buffer(ads.readADC_SingleEnded(ECGpin), fullSampleCounter, ECG_OFFSET);
 
   ppg.nextSample();
   fullSampleCounter++;
+  bufferCounter++;
 }
 
 /**
@@ -144,6 +150,41 @@ void sampleRateSingle() {
   display.display();
 
   frameCounter++;
+}
+
+/**
+ * Normalize IR and Red signals to within +/-8000 (minimum without excessive jitter)
+ * by adjusting the pulse amplidude of the Red LED only
+ */
+void normalizePPG() {
+  // Calculate Red & IR DC mean
+  int32_t redMean = 0;
+  int32_t irMean = 0;
+  int _bufferCounter = 0;
+  for (_bufferCounter = 0 ; _bufferCounter < SF ; _bufferCounter++)
+  {
+    redMean += redBuffer[_bufferCounter];
+    irMean += irBuffer[_bufferCounter];
+  }
+  redMean = redMean/SF;
+  irMean = irMean/SF;
+
+  // Adjust red LED current if it is to far above or below IR LED reading
+  if ( irMean > (redMean + 8000) ) redPulseAmplitude++;
+  if ( irMean < (redMean - 8000) ) redPulseAmplitude--;
+
+  if ( redPulseAmplitudePrevious != redPulseAmplitude )
+  {
+    ppg.setPulseAmplitudeRed(redPulseAmplitude);   // Set new red LED current
+
+    display.clearDisplay();
+    display.setCursor(0,9);
+    display.println(F("Normalizing Red LED"));
+    display.println(redPulseAmplitude);
+    display.display();
+  }
+  redPulseAmplitudePrevious = redPulseAmplitude;
+  bufferCounter = 0;
 }
 
 /**

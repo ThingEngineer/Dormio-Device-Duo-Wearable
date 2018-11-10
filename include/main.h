@@ -46,6 +46,7 @@ Adafruit_ADS1115 ads;
 void sampleRateFull();
 void sampleRateModHalfSF();
 void sampleRateSingle();
+void normalizePPG();
 void httpPost();
 void encryptBuffer();
 void loadFloatBuffer(float _bufferTemp, uint8_t _sampleCounter, uint16_t _arrayOffset);
@@ -112,6 +113,10 @@ String getFormatedMAC();
 #define CHECKSUM_OFFSET (VCC_OFFSET + VCC_SIZE)                      // Checksum
 
 #define BUFFER_SIZE (CHECKSUM_OFFSET + 1) // Total data buffer size
+byte redPulseAmplitude                 // Holds the variable red LED current value (Red LED Pulse Amplitude)
+byte redPulseAmplitudePrevious;        // Previous iteration value for the above variable
+int32_t irBuffer[SF], redBuffer[SF];   // Raw IR/Red PPG signal used to normalize Red LED
+byte bufferCounter = 0;                // Data buffer index counter for the above IR/Red data
 uint8_t dataBuffer[BUFFER_SIZE];       // Post data buffer - holds all sensor data to send
 uint8_t mac[6];                        // MAC address of the ESP8266
 uint8_t checksum = 0;                  // Data array XOR checksum
