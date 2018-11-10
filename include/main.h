@@ -4,10 +4,8 @@
  * Author: Josh Campbell
  */
 
-
 #ifndef MAIN_H
 #define MAIN_H
-
 
 /****************************************************************************
 * Includes
@@ -32,7 +30,6 @@
 #include <Adafruit_ADS1015.h>          // ADS1115 high-resolution analog to digital converter with programmable gain amplifier
 
 #include "env.h"                       // Secret values
-
 
 /****************************************************************************
 * Constructors
@@ -70,7 +67,6 @@ void checkForUpdates();
 String getFormatedMAC();
 void displayOn();
 void displayOff();
-
 
 /****************************************************************************
 * Port aliases
