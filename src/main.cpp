@@ -160,7 +160,8 @@ void normalizePPG() {
 
     display.clearDisplay();
     display.setCursor(0,9);
-    display.println(F("Normalizing Red LED"));
+    display.println(F("Normalizing PPG LED"));
+    display.print(F("Amplidude: "));
     display.println(redPulseAmplitude);
     display.display();
   }
