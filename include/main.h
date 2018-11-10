@@ -68,6 +68,8 @@ void I2CSelect(uint8_t channel);
 void calcChecksum(uint8_t newValue);
 void checkForUpdates();
 String getFormatedMAC();
+void displayOn();
+void displayOff();
 
 
 /****************************************************************************
@@ -139,6 +141,11 @@ uint8_t checksum = 0;                  // Data array XOR checksum
 uint8_t fullSampleCounter = 0;         // Full sample loop counter
 uint8_t modSFSampleCounter = 0;        // Mod SF sample loop counter (SAMPLE_COUNT / SF)
 uint16_t frameCounter = 0;             // Counts the number of sample frames captured
+
+unsigned long pressedAtMillis;         // Button press start timer
+unsigned long const longPressInterval = 3000; // Milliseconds for button press to count as a long press
+unsigned long pressedForMillis;        // Button press durration timer
+boolean displayStatus = true;          // Display status, true = on, false = off
 
 ADC_MODE(ADC_VCC);
 

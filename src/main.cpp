@@ -482,8 +482,29 @@ void wifiResetButton() {
       display.invertDisplay(false);
       connectToWiFi(true);
     } else {
+      // Short press, toggle OLED display on and off
+      if (displayStatus) {
+        displayOff();
+      } else {
+        displayOn();
+      }
     }
   }
   pressedForMillis = millis() - pressedAtMillis;
 }
 
+/**
+ * Toggle OLED display off
+ */
+void displayOff() {
+  display.ssd1306_command(0xAE);
+  displayStatus = false;
+}
+
+/**
+ * Toggle OLED display on
+ */
+void displayOn() {
+  display.ssd1306_command(0xAF);
+  displayStatus = true;
+}
