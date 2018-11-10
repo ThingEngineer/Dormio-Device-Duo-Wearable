@@ -4,7 +4,7 @@
  * Initialization routines
  */
 void setup() {
-  Serial.begin(115200);                // Initialize serial data transmission and set baud rate
+  // Serial.begin(115200);                // Initialize serial data transmission and set baud rate
 
   wifiBtn = new Button(WIFI_BUTTON_PIN, PULLUP, INVERT, DEBOUNCE_MS);
 
