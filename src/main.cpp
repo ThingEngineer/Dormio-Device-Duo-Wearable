@@ -279,9 +279,6 @@ void httpPost() {
     {
       display.println(httpResponseCode);
       display.display();
-      I2CSelect(6); // Select I2C bus channel 6
-      haptic.go(); // Play the effect
-      I2CSelect(7); // Select I2C bus channel 7
     } else {
       display.clearDisplay();
       display.setCursor(0,0);
