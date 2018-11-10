@@ -153,8 +153,11 @@ void sampleRateSingle() {
 }
 
 /**
- * Normalize IR and Red signals to within +/-8000 (minimum without excessive jitter)
+ * Normalize IR and Red signals to within +/-8000
  * by adjusting the pulse amplidude of the Red LED only
+ *
+ * Each redPulseAmplitude step results in a change of about 8000
+ * which means this is the minimum range without causing excessive jitter
  */
 void normalizePPG() {
   // Calculate Red & IR DC mean
