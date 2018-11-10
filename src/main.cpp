@@ -54,7 +54,8 @@ void setup() {
   }
   display.clearDisplay();
   display.setCursor(0,0);
-  display.println(F("Connected OK"));
+  display.println(F("Connected To:"));
+  display.println(WiFi.SSID());
   display.print(F("IP "));
   display.println(WiFi.localIP());
   display.print(F("MAC "));
