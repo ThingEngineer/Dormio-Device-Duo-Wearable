@@ -4,3 +4,5 @@
 .gcc-flags.json
 
 /include/env.h
+
+scratch.cpp
