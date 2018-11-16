@@ -509,7 +509,7 @@ void connectToWiFi(boolean resetSettings) {
   if (resetSettings) wifiManager.resetSettings(); // If flag is set reset wifi credentials
 
   wifiManager.setAPCallback(WiFiConfigMode); // Set config mode callback
-  wifiManager.setSaveConfigCallback(WiFiSuccess); // Set success callback
+  // wifiManager.setSaveConfigCallback(WiFiSuccess); // Set success callback
 
   wifiManager.setBreakAfterConfig(true); // Exit after config, even if connection is unsuccessful
 
