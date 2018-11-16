@@ -83,6 +83,13 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length);
 /****************************************************************************
 * Variable and constant declarations
 ****************************************************************************/
+#define DEBUG_ESP_PORT Serial          // Comment to disable all serial debug output
+#ifdef DEBUG_ESP_PORT
+#define DEBUG_MSG(...) DEBUG_ESP_PORT.printf( __VA_ARGS__ )
+#else
+#define DEBUG_MSG(...)
+#endif
+
 #define PULLUP true
 #define INVERT true
 #define DEBOUNCE_MS 20

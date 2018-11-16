@@ -4,7 +4,10 @@
  * Initialization routines
  */
 void setup() {
-  // Serial.begin(115200);                // Initialize serial data transmission and set baud rate
+  #ifdef DEBUG_ESP_PORT
+  DEBUG_ESP_PORT.begin(921600);                // Initialize serial data transmission and set baud rate
+  DEBUG_ESP_PORT.setDebugOutput(true);         // Enable ESP8266 debug output
+  #endif
 
   wifiBtn = new Button(WIFI_BUTTON_PIN, PULLUP, INVERT, DEBOUNCE_MS);
 
@@ -439,6 +442,7 @@ void checkForUpdates() {
   display.println( firmwareVersion );
   display.println( F("Checking For Updates") );
   display.display();
+  DEBUG_MSG("Checking for updates\n");
 
   HTTPClient httpClient;
   httpClient.begin( fwVersionURL ); // Specify destination for HTTP request
@@ -448,6 +452,7 @@ void checkForUpdates() {
     uint16_t newVersion = newFWVersion.toInt();
 
     if( newVersion > firmwareVersion ) { // If there is a newer version then flash OTA
+      DEBUG_MSG("Update exists, do update\n");
       display.print( F("Updating From Version") );
       display.print( firmwareVersion );
       display.print( F(" to ") );
@@ -465,17 +470,18 @@ void checkForUpdates() {
       display.display();
     }
     else {
+      DEBUG_MSG("No Updates\n");
       display.println( F("No Updates") );
       display.display();
     }
   }
   else {
+    DEBUG_MSG("Update version check error: %i\n", httpCode);
     display.print( F("Version Check Failed Error: ") );
     display.println( httpCode );
     display.display();
   }
   httpClient.end(); // Free resources
-  delay(2000);
 }
 
 /**
@@ -497,9 +503,8 @@ String getFormatedMAC()
  * @param resetSettings If set to true calling this function clears any existing WiFi credentials
  */
 void connectToWiFi(boolean resetSettings) {
+  DEBUG_MSG("Connectiong to WiFi\n");
   WiFiManager wifiManager; // Local WiFiManager Initialization
-
-  wifiManager.setDebugOutput(false); // Disable debug output
 
   if (resetSettings) wifiManager.resetSettings(); // If flag is set reset wifi credentials
 
@@ -518,7 +523,8 @@ void connectToWiFi(boolean resetSettings) {
 }
 
 /**
- * Called when access point and captive configuration portal are ready and updates OLED display with instructions
+ * Called when "Dormio Setup" access point and captive configuration portal are ready
+ * Updates OLED display with instructions
  */
 void WiFiConfigMode(WiFiManager *myWiFiManager) {
   display.clearDisplay();
@@ -534,6 +540,7 @@ void WiFiConfigMode(WiFiManager *myWiFiManager) {
  * Called when connection to WiFi was successful and updates OLED display with connection info
  */
 void WiFiSuccess() {
+  DEBUG_MSG("Wifi Success\n");
   WiFi.macAddress(mac); // Read MAC address into mac array
   display.clearDisplay();
   display.setCursor(0,0);
@@ -554,9 +561,8 @@ void WiFiSuccess() {
   display.print(F(":"));
   display.println(mac[0],HEX);
   display.display();
+}
 
-  delay(2000);
-  checkForUpdates();
 /**
  * Establish persistent WebSocket connection to Dormio server
  */
@@ -580,10 +586,12 @@ void wifiResetButton() {
   wifiBtn->read();
 
   if (wifiBtn->wasPressed()) {
+    DEBUG_MSG("WiFi button pressed\n");
     pressedAtMillis = millis();
   }
 
   if (wifiBtn->wasReleased()) {
+    DEBUG_MSG("WiFi button released\n");
     if (pressedForMillis > longPressInterval) {
       // Long press, reset WiFi credentials and start config portal AP
       displayOn();
@@ -613,6 +621,7 @@ void wifiResetButton() {
 void displayOff() {
   display.ssd1306_command(0xAE);
   displayStatus = false;
+  DEBUG_MSG("Display off\n");
 }
 
 /**
@@ -621,4 +630,5 @@ void displayOff() {
 void displayOn() {
   display.ssd1306_command(0xAF);
   displayStatus = true;
+  DEBUG_MSG("Display on\n");
 }
