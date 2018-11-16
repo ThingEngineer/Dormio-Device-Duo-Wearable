@@ -49,6 +49,11 @@ void setup() {
   delay(1000);
 
   connectToWiFi();
+  WiFiSuccess();
+  delay(2000);
+  checkForUpdates();
+  delay(2000);
+  connectToWebSocket();
 }
 
 /**
@@ -57,19 +62,31 @@ void setup() {
 void loop() {
   wifiResetButton(); // Check for wifi reset button press
 
-  sampleRateFull(); // Full sample rate (50 per second)
+  webSocket.loop();
 
-  if ( bufferCounter == SF ) normalizePPG(); // Every SF interval (50 samples)
+  if(isConnected) {
+    // uint64_t now = millis();
+    // if((now - heartbeatTimestamp) > HEARTBEAT_INTERVAL) {
+    //     heartbeatTimestamp = now;
+    //     webSocket.sendTXT("2");
+    // }
 
-  if ( fullSampleCounter % HALF_SF == 0) sampleRateModHalfSF(); // SAMPLE_COUNT/HALF_SF (2 per second)
+    sampleRateFull(); // Full sample rate (50 per second)
 
-  if ( fullSampleCounter == SAMPLE_COUNT ) {
-    sampleRateSingle(); // Minimum sample rate (1 every 5 seconds)
-    encryptBuffer(); // Encrypt the data buffer before sending
-    httpPost(); // Sample frame complete, send data
-    fullSampleCounter = 0; // Frame complete, reset counters
-    modSFSampleCounter = 0;
-    checksum = 0; // Reset checksum
+    if ( bufferCounter == SF ) normalizePPG(); // Every SF interval (50 samples)
+
+    if ( fullSampleCounter % HALF_SF == 0) sampleRateModHalfSF(); // SAMPLE_COUNT/HALF_SF (2 per second)
+
+    if ( fullSampleCounter == SAMPLE_COUNT ) {
+      sampleRateSingle(); // Minimum sample rate (1 every 5 seconds)
+      encryptBuffer(); // Encrypt the data buffer before sending
+      // httpPost(); // Sample frame complete, send data over http
+      wsSendBuffer(); // Sample frame complete, send data over WebSockets
+      fullSampleCounter = 0; // Frame complete, reset counters
+      modSFSampleCounter = 0;
+      checksum = 0; // Reset checksum
+    }
+
   }
 }
 
@@ -264,37 +281,122 @@ void calcChecksum(uint8_t _value) {
 /**
  * Send the data buffer to the postURL set in env.h
  */
-void httpPost() {
-  if( WiFi.status() == WL_CONNECTED ) // Check WiFi connection status
+// void httpPost() {
+//   if ( WiFi.status() == WL_CONNECTED ) // Check WiFi connection status
+//   {
+//     HTTPClient httpClient;
+//
+//     httpClient.begin(postURL); // Specify destination for HTTP request
+//     httpClient.addHeader(F("Content-Type"), F("application/json")); // Specify content-type
+//     httpClient.addHeader(F("Content-Length"), String(BUFFER_SIZE)); // Specify content length
+//
+//     uint16_t httpResponseCode = httpClient.POST(dataBuffer, BUFFER_SIZE); // Send the POST request
+//
+//     if( httpResponseCode > 0 )
+//     {
+//       display.println(httpResponseCode);
+//       display.display();
+//     } else {
+//       display.clearDisplay();
+//       display.setCursor(0,0);
+//       display.print(F("HTTP Err: "));
+//       display.println(dataBuffer[CHECKSUM_OFFSET]);
+//       display.display();
+//     }
+//
+//     httpClient.end(); // Free resources
+//   } else {
+//      display.clearDisplay();
+//      display.setCursor(0,0);
+//      display.print(F("No WiFI"));
+//      display.display();
+//      connectToWiFi();
+//   }
+// }
+
+void wsSendBuffer() {
+  if ( (WiFi.status() == WL_CONNECTED) && (isConnected = true) ) // Verify WiFi and WebSocket connection status
   {
-    HTTPClient httpClient;
-
-    httpClient.begin(postURL); // Specify destination for HTTP request
-    httpClient.addHeader(F("Content-Type"), F("application/json")); // Specify content-type
-    httpClient.addHeader(F("Content-Length"), String(BUFFER_SIZE)); // Specify content length
-
-    uint16_t httpResponseCode = httpClient.POST(dataBuffer, BUFFER_SIZE); // Send the POST request
-
-    if( httpResponseCode > 0 )
-    {
-      display.println(httpResponseCode);
-      display.display();
-    } else {
-      display.clearDisplay();
-      display.setCursor(0,0);
-      display.print(F("HTTP Err: "));
-      display.println(dataBuffer[CHECKSUM_OFFSET]);
-      display.display();
-    }
-
-    httpClient.end(); // Free resources
+    uint8_t * bufferPointer = (uint8_t *) &dataBuffer[0]; // Create pointer to dataBuffer
+    webSocket.sendBIN(bufferPointer, BUFFER_SIZE);
+    display.println("OK");
+    display.display();
   } else {
-     display.clearDisplay();
-     display.setCursor(0,0);
-     display.print(F("No WiFI"));
-     display.display();
-     connectToWiFi();
+    // TODO handle non-connected state
   }
+}
+
+void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
+	switch(type) {
+		case WStype_DISCONNECTED:
+			DEBUG_MSG("[WS] Disconnected\n");
+      isConnected = false;
+			break;
+
+		case WStype_CONNECTED: {
+			DEBUG_MSG("[WS] Connected\n");
+      webSocket.sendTXT("{\"c\":\"sub\",\"chan\":\"hb\"}"); // Subscribe to "hb" HeartBeat channel
+      webSocket.sendTXT("{\"c\":\"sub\",\"chan\":\"dormio\"}"); // Subscribe to "dormio" channel
+      isConnected = true;
+		  } break;
+
+		case WStype_TEXT:
+			DEBUG_MSG("[WS] received text: %s\n", payload);
+
+      if ( length == 1 ) {  // Handle single character commands
+        uint8_t val = strtol((const char *)payload, NULL, 0); // Convert payload char to it's binary value representation
+
+        switch (val) {
+          case 1:
+            webSocket.disconnect();
+            delay(100);
+            WiFi.mode(WIFI_OFF);
+            delay(3000);
+            ESP.restart();
+            break;
+
+          case 2:
+            webSocket.sendTXT("2");
+            DEBUG_MSG("[WS] Sent heartbeat response\n");
+            // TODO Heartbeat: log that the response was received with time and latency(maybe), (handle non responders in the heartbeat script)
+            break;
+
+          case 9:
+            checkForUpdates();
+            break;
+
+          default:
+            DEBUG_MSG("[WS] Invalid command\n");
+        }
+
+      }
+      break;
+
+		case WStype_BIN:
+			DEBUG_MSG("[WS] get binary length: %u\n", length);
+			hexdump(payload, length);
+			break;
+
+    case WStype_FRAGMENT_TEXT_START:
+      DEBUG_MSG("[WS] FRAGMENT_TEXT_START %s\n", payload);
+      break;
+
+    case WStype_FRAGMENT_BIN_START:
+      DEBUG_MSG("[WS] FRAGMENT_BIN_START %s\n", payload);
+      break;
+
+    case WStype_FRAGMENT:
+      DEBUG_MSG("[WS] FRAGMENT %s\n", payload);
+      break;
+
+    case WStype_FRAGMENT_FIN:
+      DEBUG_MSG("[WS] FRAGMENT_FIN %s\n", payload);
+      break;
+
+    case WStype_ERROR:
+      DEBUG_MSG("[WS] Error %s\n", payload);
+      break;
+	} // END Switch WStype
 }
 
 /**
@@ -455,6 +557,20 @@ void WiFiSuccess() {
 
   delay(2000);
   checkForUpdates();
+/**
+ * Establish persistent WebSocket connection to Dormio server
+ */
+void connectToWebSocket() {
+  DEBUG_MSG("Connectiong to Dormio websocket server\n");
+  display.clearDisplay();
+  display.setCursor(0,9);
+  display.println( F("    Connecting to") );
+  display.println( F("    Dormio Server") );
+  display.display();
+
+  webSocket.begin(wsHost, wsPort, wsAccessToken, ""); // Connect to WebSocket server
+  webSocket.onEvent(webSocketEvent); // Set Websocket event handler
+  webSocket.setReconnectInterval(10000); // Try to reconnect every 10 seconds if connection has failed
 }
 
 /**

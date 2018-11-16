@@ -17,6 +17,7 @@
 #include <ESP8266WiFi.h>               // ESP8266 core for Arduino
 #include <ESP8266HTTPClient.h>         // HTTP client for ESP8266
 #include <ESP8266httpUpdate.h>         // HTTP OTA Update for ESP8266
+#include <WebSocketsClient.h>          // WebSocket Server and Client for Arduino
 #include <DNSServer.h>                 // ESP8266 simple DNS server
 #include <ESP8266WebServer.h>          // ESP8266 simple web-server
 #include <WiFiManager.h>               // ESP8266 WiFi Connection manager with web captive portal - https://github.com/tzapu/WiFiManager
@@ -34,6 +35,7 @@
 /****************************************************************************
 * Constructors
 ****************************************************************************/
+WebSocketsClient webSocket;
 Button *wifiBtn;
 MAX30105 ppg;
 Adafruit_MLX90614 irTherm = Adafruit_MLX90614();
@@ -50,12 +52,14 @@ Adafruit_ADS1115 ads;
 void connectToWiFi(boolean resetSettings = false);
 void WiFiConfigMode(WiFiManager *myWiFiManager);
 void WiFiSuccess();
+void connectToWebSocket();
 void wifiResetButton();
 void sampleRateFull();
 void sampleRateModHalfSF();
 void sampleRateSingle();
 void normalizePPG();
 void httpPost();
+void wsSendBuffer();
 void encryptBuffer();
 void loadFloatBuffer(float _bufferTemp, uint8_t _sampleCounter, uint16_t _arrayOffset);
 void load32Buffer(uint32_t _bufferTemp, uint8_t _sampleCounter, uint16_t _arrayOffset);
@@ -67,6 +71,7 @@ void checkForUpdates();
 String getFormatedMAC();
 void displayOn();
 void displayOff();
+void webSocketEvent(WStype_t type, uint8_t * payload, size_t length);
 
 /****************************************************************************
 * Port aliases
@@ -142,6 +147,8 @@ unsigned long pressedAtMillis;         // Button press start timer
 unsigned long const longPressInterval = 3000; // Milliseconds for button press to count as a long press
 unsigned long pressedForMillis;        // Button press durration timer
 boolean displayStatus = true;          // Display status, true = on, false = off
+
+bool isConnected = false;
 
 ADC_MODE(ADC_VCC);
 
