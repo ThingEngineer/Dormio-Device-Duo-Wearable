@@ -68,12 +68,7 @@ void loop() {
   webSocket.loop();
 
   if(isConnected) {
-    // uint64_t now = millis();
-    // if((now - heartbeatTimestamp) > HEARTBEAT_INTERVAL) {
-    //     heartbeatTimestamp = now;
-    //     webSocket.sendTXT("2");
-    // }
-
+    
     sampleRateFull(); // Full sample rate (50 per second)
 
     if ( bufferCounter == SF ) normalizePPG(); // Every SF interval (50 samples)
