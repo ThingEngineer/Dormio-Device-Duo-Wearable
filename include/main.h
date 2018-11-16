@@ -139,10 +139,10 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length);
 #define CHECKSUM_OFFSET (VCC_OFFSET + VCC_SIZE)                      // Checksum
 
 #define BUFFER_SIZE (CHECKSUM_OFFSET + 1) // Total data buffer size
-byte redPulseAmplitude;                // Holds the variable red LED amplidude value
-byte redPulseAmplitudePrevious;        // Previous iteration value for the red LED amplidude
+uint8_t redPulseAmplitude;             // Holds the variable red LED amplidude value
+uint8_t redPulseAmplitudePrevious;     // Previous iteration value for the red LED amplidude
 int32_t irBuffer[SF], redBuffer[SF];   // Raw IR/Red PPG signal used to normalize Red LED
-byte bufferCounter = 0;                // Data buffer index counter for the above IR/Red data
+uint8_t bufferCounter = 0;             // Data buffer index counter for the above IR/Red data
 uint8_t dataBuffer[BUFFER_SIZE];       // Post data buffer - holds all sensor data to send
 uint8_t mac[6];                        // MAC address of the ESP8266
 uint8_t checksum = 0;                  // Data array XOR checksum
