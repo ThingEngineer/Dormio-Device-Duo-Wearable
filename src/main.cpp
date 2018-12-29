@@ -68,10 +68,11 @@ void loop() {
   webSocket.loop();
 
   if(isConnected) {
-    
+
     sampleRateFull(); // Full sample rate (50 per second)
 
-    if ( bufferCounter == SF ) normalizePPG(); // Every SF interval (50 samples)
+    // if ( bufferCounter == SF ) normalizePPG(); // Every SF interval (50 samples)
+    if ( bufferCounter == SF ) bufferCounter = 0;
 
     if ( fullSampleCounter % HALF_SF == 0) sampleRateModHalfSF(); // SAMPLE_COUNT/HALF_SF (2 per second)
 
@@ -80,6 +81,7 @@ void loop() {
       encryptBuffer(); // Encrypt the data buffer before sending
       // httpPost(); // Sample frame complete, send data over http
       wsSendBuffer(); // Sample frame complete, send data over WebSockets
+      bufferCounter = 0;
       fullSampleCounter = 0; // Frame complete, reset counters
       modSFSampleCounter = 0;
       checksum = 0; // Reset checksum
