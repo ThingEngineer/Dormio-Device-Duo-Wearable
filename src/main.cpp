@@ -5,11 +5,17 @@
  */
 void setup() {
   #ifdef DEBUG_ESP_PORT
-  DEBUG_ESP_PORT.begin(921600);                // Initialize serial data transmission and set baud rate
-  DEBUG_ESP_PORT.setDebugOutput(true);         // Enable ESP8266 debug output
+  DEBUG_ESP_PORT.begin(921600);        // Initialize serial data transmission and set baud rate
+  DEBUG_ESP_PORT.setDebugOutput(true); // Enable ESP8266 debug output
   #endif
 
   wifiBtn = new Button(WIFI_BUTTON_PIN, PULLUP, INVERT, DEBOUNCE_MS);
+
+
+  pinMode(BEEPER, OUTPUT);             // Initilize beeper pin
+  digitalWrite(BEEPER, HIGH);          // Short beep
+  delay(100);
+  digitalWrite(BEEPER, LOW);
 
   /************************************I2C************************************/
   Wire.begin(4,5);                     // Initial I2C and join bus as master

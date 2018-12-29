@@ -76,6 +76,7 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length);
 * Port aliases
 ****************************************************************************/
 #define WIFI_BUTTON_PIN 0              // WiFi reset button on GPIO0 (D3)
+#define BEEPER 15                      // 
 #define GSRpin 0                       // Galvanic skin response ADS1115 analog input A0
 #define ECGpin 1                       // ECG/EKG/EMG Electrocardiography/Electromyography ADS1115 analog input A1
 
