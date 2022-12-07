@@ -21,6 +21,7 @@
 #include <DNSServer.h>                 // ESP8266 simple DNS server
 #include <ESP8266WebServer.h>          // ESP8266 simple web-server
 #include <WiFiManager.h>               // ESP8266 WiFi Connection manager with web captive portal - https://github.com/tzapu/WiFiManager
+#include <WiFiClient.h>                // Creates a client that can connect to to a specified internet IP address and port - https://github.com/esp8266/Arduino/blob/master/libraries/ESP8266WiFi/src/WiFiClient.h
 #include <JC_Button.h>                 // Arduino Button Library - https://github.com/JChristensen/JC_Button
 #include <MAX30105.h>                  // SparkFun MAX3010x Pulse and Proximity Sensor Library - https://github.com/sparkfun/SparkFun_MAX3010x_Sensor_Library
 #include <Adafruit_MLX90614.h>         // MLX90614 temperature sensor library - https://github.com/adafruit/Adafruit-MLX90614-Library
@@ -35,6 +36,7 @@
 /****************************************************************************
 * Constructors
 ****************************************************************************/
+WiFiClient wifiClient;
 WebSocketsClient webSocket;
 Button *wifiBtn;
 MAX30105 ppg;

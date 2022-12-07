@@ -11,7 +11,6 @@ void setup() {
 
   wifiBtn = new Button(WIFI_BUTTON_PIN, PULLUP, INVERT, DEBOUNCE_MS);
 
-
   pinMode(BEEPER, OUTPUT);             // Initilize beeper pin
   digitalWrite(BEEPER, HIGH);          // Short beep
   delay(100);
@@ -448,7 +447,7 @@ void checkForUpdates() {
   DEBUG_MSG("Checking for updates\n");
 
   HTTPClient httpClient;
-  httpClient.begin( fwVersionURL ); // Specify destination for HTTP request
+  httpClient.begin( wifiClient, fwVersionURL ); // Specify destination for HTTP request
   int httpCode = httpClient.GET(); // Send the GET request
   if( httpCode == 200 ) {
     String newFWVersion = httpClient.getString(); // Get current version according to the update server
@@ -462,10 +461,10 @@ void checkForUpdates() {
       display.println( newFWVersion );
       display.display();
 
-      String fwImageURL = fwURL; // Build firmware binary request URL
-      fwImageURL.concat( F("bin/") );
+      String fwImageURL = ( F("/bin/") );
       fwImageURL.concat( encodedMAC );
-      t_httpUpdate_return ret = ESPhttpUpdate.update( fwImageURL ); // Atempt to do update
+      WiFiClient client;
+      t_httpUpdate_return ret = ESPhttpUpdate.update( client, updateHost, updatePort, fwImageURL ); // Atempt to do update
 
       display.print( F("Update Error: ") );
       display.println( ret );
