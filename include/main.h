@@ -157,7 +157,7 @@ unsigned long const longPressInterval = 3000; // Milliseconds for button press t
 unsigned long pressedForMillis;        // Button press durration timer
 boolean displayStatus = true;          // Display status, true = on, false = off
 
-bool isConnected = false;
+boolean isConnected = false;
 
 ADC_MODE(ADC_VCC);
 
