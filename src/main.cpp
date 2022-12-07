@@ -43,7 +43,7 @@ void setup() {
   ppg.readTemperature();               // Initialize die temperture reading
 
   /************************************OLED***********************************/
-  display.begin(SSD1306_SWITCHCAPVCC, 0x3C); // initialize with the I2C addr 0x3C (for the 128x32)
+  display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS); // Initialize display with the I2C address
   display.clearDisplay();
   display.setTextSize(1);
   display.setTextColor(WHITE);

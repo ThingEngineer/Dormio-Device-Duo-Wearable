@@ -12,6 +12,7 @@
 ****************************************************************************/
 #include <Arduino.h>                   // Main include file for the Arduino SDK
 #include <Wire.h>                      // Arduino I2C library
+#include <Adafruit_I2CDevice.h>        // Adafruit BusIO library
 #include <Esp.h>                       // ESP8266-specific APIs
 #include <FS.h>                        // ESP8266 file system wrapper
 #include <ESP8266WiFi.h>               // ESP8266 core for Arduino
@@ -43,8 +44,12 @@ MAX30105 ppg;
 Adafruit_MLX90614 irTherm = Adafruit_MLX90614();
 LSM6DS3 imu;
 Adafruit_DRV2605 haptic;
+
+#define SCREEN_WIDTH 128 // OLED display width, in pixels
+#define SCREEN_HEIGHT 32 // OLED display height, in pixels
+#define SCREEN_ADDRESS 0x3C // 0x3C for 128x32
 #define OLED_RESET 16
-Adafruit_SSD1306 display(OLED_RESET);
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 Adafruit_ADS1115 ads;
 
 /****************************************************************************
