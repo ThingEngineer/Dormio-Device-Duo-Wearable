@@ -401,6 +401,18 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
     case WStype_ERROR:
       DEBUG_MSG("[WS] Error %s\n", payload);
       break;
+
+    case WStype_PING:
+      DEBUG_MSG("[WS] Error %s\n", payload);
+      break;
+
+    case WStype_PONG:
+      DEBUG_MSG("[WS] Error %s\n", payload);
+      break;
+    
+    default:
+      DEBUG_MSG("[WS] Unhandled response type %s\n", payload);
+      break;
 	} // END Switch WStype
 }
 
